@@ -22,7 +22,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.card.MaterialCardView
 
 import org.chromium.chrome.R
-import org.chromium.chrome.browser.playlist.kotlin.PlaylistViewModel
 import org.chromium.chrome.browser.playlist.kotlin.activity.NewPlaylistActivity
 import org.chromium.chrome.browser.playlist.kotlin.activity.PlaylistBaseActivity
 import org.chromium.chrome.browser.playlist.kotlin.adapter.recyclerview.PlaylistAdapter
@@ -36,8 +35,6 @@ import org.chromium.playlist.mojom.Playlist
 import org.chromium.playlist.mojom.PlaylistService
 
 class MoveOrCopyToPlaylistBottomSheet : BottomSheetDialogFragment(), PlaylistClickListener {
-
-    private lateinit var mPlaylistViewModel: PlaylistViewModel
     private val mMoveOrCopyModel: MoveOrCopyModel = PlaylistUtils.moveOrCopyModel
 
     override fun onCreateView(
@@ -48,7 +45,6 @@ class MoveOrCopyToPlaylistBottomSheet : BottomSheetDialogFragment(), PlaylistCli
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mPlaylistViewModel = ViewModelProvider(requireActivity())[PlaylistViewModel::class.java]
 
         val layoutBottomSheet: MaterialCardView = view.findViewById(R.id.layoutBottomSheet)
         layoutBottomSheet.setTopCornersRounded(16)

@@ -42,7 +42,7 @@ class AllPlaylistActivity : PlaylistBaseActivity(), PlaylistClickListener {
     private lateinit var mTvRecentlyPlayed: AppCompatTextView
 
     override fun initializeViews() {
-        setContentView(R.layout.fragment_all_playlist)
+        setContentView(R.layout.activity_all_playlist)
 
         mPlaylistToolbar = findViewById(R.id.playlistToolbar)
 

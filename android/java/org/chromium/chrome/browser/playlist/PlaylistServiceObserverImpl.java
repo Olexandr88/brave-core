@@ -80,10 +80,14 @@ public class PlaylistServiceObserverImpl implements PlaylistServiceObserver {
         if (mDelegate == null) return;
         mDelegate.onItemCached(playlistItem);
         Log.e(TAG, "onItemCached 1");
-        Log.e(TAG,
-                "onItemCached 1 : " + playlistItem.mediaPath.url + " : "
+        Log.e(
+                TAG,
+                "onItemCached 1 : "
+                        + playlistItem.mediaPath.url
+                        + " : "
                         + MediaUtils.isHlsFile(playlistItem.mediaPath.url));
-        Log.e(TAG,
+        Log.e(
+                TAG,
                 "onItemCached 1 : HlsUtils.isVideoPlaybackServiceRunning() :"
                         + HlsUtils.isVideoPlaybackServiceRunning());
         if (!MediaUtils.isHlsFile(playlistItem.mediaPath.url)

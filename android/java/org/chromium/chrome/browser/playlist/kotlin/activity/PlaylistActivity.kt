@@ -120,7 +120,7 @@ class PlaylistActivity :
     }
 
     override fun initializeViews() {
-        setContentView(R.layout.fragment_playlist)
+        setContentView(R.layout.activity_playlist)
 
         mEmptyView = findViewById(R.id.empty_view)
         mPlaylistView = findViewById(R.id.playlist_view)

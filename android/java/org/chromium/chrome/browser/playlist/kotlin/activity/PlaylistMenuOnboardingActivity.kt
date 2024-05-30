@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.playlist.kotlin.extension.showOnboardingGradi
 import org.chromium.chrome.browser.playlist.kotlin.util.ConstantUtils
 import org.chromium.chrome.browser.playlist.kotlin.util.PlaylistUtils
 
-class PlaylistMenuOnboardingActivity : AppCompatActivity(R.layout.playlist_onboarding_activity) {
+class PlaylistMenuOnboardingActivity : AppCompatActivity(R.layout.activity_playlist_onboarding) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val onboardingLayout = findViewById<ScrollView>(R.id.onboardingLayout)

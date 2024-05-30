@@ -18,7 +18,6 @@ import androidx.media3.exoplayer.hls.playlist.HlsMediaPlaylist.Segment;
 
 import org.chromium.base.BravePreferenceKeys;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.playlist.PlaylistServiceFactoryAndroid;
@@ -66,83 +65,121 @@ public class HlsServiceImpl extends HlsService.Impl implements ConnectionErrorHa
     }
 
     private void startHlsContentFromQueue() {
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            if (mPlaylistService == null) {
-                return;
-            }
-
-            mPlaylistService.getFirstHlsContent(playlistItemId -> {
-                if (TextUtils.isEmpty(playlistItemId)) {
-                    return;
-                }
-
-                mPlaylistService.getPlaylistItem(playlistItemId, playlistItem -> {
-                    if (playlistItem == null) {
-                        PostTask.postTask(TaskTraits.USER_VISIBLE_MAY_BLOCK,
-                                () -> { removeContentAndStartNextDownload(playlistItemId); });
+        PostTask.postTask(
+                TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                () -> {
+                    if (mPlaylistService == null) {
+                        return;
                     }
-                    currentDownloadingPlaylistItemId = playlistItemId;
-                    HlsUtils.getManifestFile(mContext, mPlaylistService, playlistItem,
-                            new HlsUtils.HlsManifestDelegate() {
-                                @Override
-                                public void onHlsManifestCompleted(Queue<Segment> segmentsQueue) {
-                                    int total = segmentsQueue.size();
-                                    String hlsMediaFilePath =
-                                            HlsUtils.getHlsMediaFilePath(playlistItem);
-                                    HlsUtils.deleteFileIfExist(hlsMediaFilePath);
-                                    HlsUtils.getHLSFile(mContext, mPlaylistService, playlistItem,
-                                            segmentsQueue, new HlsUtils.HlsFileDelegate() {
-                                                @Override
-                                                public void onProgress(int sofar) {
-                                                    if (total > 0) {
-                                                        PlaylistUtils.updateHlsContentProgress(
-                                                                new HlsContentProgressModel(
-                                                                        playlistItem.id,
-                                                                        (long) total, (long) sofar,
-                                                                        String.valueOf((sofar * 100)
-                                                                                / total)));
-                                                    }
-                                                }
 
-                                                @Override
-                                                public void onReady(String mediaPath) {
-                                                    PostTask.postTask(
-                                                            TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                                                            () -> {
-                                                                long updatedFileSize =
-                                                                        MediaUtils.getFileSizeFromUri(
-                                                                                mContext,
-                                                                                Uri.parse("file://"
-                                                                                        + mediaPath));
-                                                                mPlaylistService
-                                                                        .updateItemHlsMediaFilePath(
-                                                                                playlistItem.id,
-                                                                                mediaPath,
-                                                                                updatedFileSize);
-                                                                addNewPlaylistItemModel(
-                                                                        playlistItem.id);
-                                                                removeContentAndStartNextDownload(
-                                                                        playlistItem.id);
-                                                            });
-                                                }
-                                            });
+                    mPlaylistService.getFirstHlsContent(
+                            playlistItemId -> {
+                                if (TextUtils.isEmpty(playlistItemId)) {
+                                    return;
                                 }
+
+                                mPlaylistService.getPlaylistItem(
+                                        playlistItemId,
+                                        playlistItem -> {
+                                            if (playlistItem == null) {
+                                                PostTask.postTask(
+                                                        TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                                                        () -> {
+                                                            removeContentAndStartNextDownload(
+                                                                    playlistItemId);
+                                                        });
+                                            }
+                                            currentDownloadingPlaylistItemId = playlistItemId;
+                                            HlsUtils.getManifestFile(
+                                                    mContext,
+                                                    mPlaylistService,
+                                                    playlistItem,
+                                                    new HlsUtils.HlsManifestDelegate() {
+                                                        @Override
+                                                        public void onHlsManifestCompleted(
+                                                                Queue<Segment> segmentsQueue) {
+                                                            int total = segmentsQueue.size();
+                                                            String hlsMediaFilePath =
+                                                                    HlsUtils.getHlsMediaFilePath(
+                                                                            playlistItem);
+                                                            HlsUtils.deleteFileIfExist(
+                                                                    hlsMediaFilePath);
+                                                            HlsUtils.getHLSFile(
+                                                                    mContext,
+                                                                    mPlaylistService,
+                                                                    playlistItem,
+                                                                    segmentsQueue,
+                                                                    new HlsUtils.HlsFileDelegate() {
+                                                                        @Override
+                                                                        public void onProgress(
+                                                                                int sofar) {
+                                                                            if (total > 0) {
+                                                                                PlaylistUtils
+                                                                                        .updateHlsContentProgress(
+                                                                                                new HlsContentProgressModel(
+                                                                                                        playlistItem
+                                                                                                                .id,
+                                                                                                        (long)
+                                                                                                                total,
+                                                                                                        (long)
+                                                                                                                sofar,
+                                                                                                        String
+                                                                                                                .valueOf(
+                                                                                                                        (sofar
+                                                                                                                                        * 100)
+                                                                                                                                / total)));
+                                                                            }
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onReady(
+                                                                                String mediaPath) {
+                                                                            PostTask.postTask(
+                                                                                    TaskTraits
+                                                                                            .BEST_EFFORT_MAY_BLOCK,
+                                                                                    () -> {
+                                                                                        long
+                                                                                                updatedFileSize =
+                                                                                                        MediaUtils
+                                                                                                                .getFileSizeFromUri(
+                                                                                                                        mContext,
+                                                                                                                        Uri
+                                                                                                                                .parse(
+                                                                                                                                        "file://"
+                                                                                                                                                + mediaPath));
+                                                                                        mPlaylistService
+                                                                                                .updateItemHlsMediaFilePath(
+                                                                                                        playlistItem
+                                                                                                                .id,
+                                                                                                        mediaPath,
+                                                                                                        updatedFileSize);
+                                                                                        addNewPlaylistItemModel(
+                                                                                                playlistItem
+                                                                                                        .id);
+                                                                                        removeContentAndStartNextDownload(
+                                                                                                playlistItem
+                                                                                                        .id);
+                                                                                    });
+                                                                        }
+                                                                    });
+                                                        }
+                                                    });
+                                        });
                             });
                 });
-            });
-        });
     }
 
     private void removeContentAndStartNextDownload(String playlistItemId) {
         mPlaylistService.removeHlsContent(playlistItemId);
         currentDownloadingPlaylistItemId = "";
-        mPlaylistService.getFirstHlsContent(firstPlaylistItemId -> {
-            if (!TextUtils.isEmpty(firstPlaylistItemId)) {
-                startHlsContentFromQueue();
-            } else {
-                getService().stopSelf();
-            }
-        });
+        mPlaylistService.getFirstHlsContent(
+                firstPlaylistItemId -> {
+                    if (!TextUtils.isEmpty(firstPlaylistItemId)) {
+                        startHlsContentFromQueue();
+                    } else {
+                        getService().stopSelf();
+                    }
+                });
     }
 
     private void addNewPlaylistItemModel(String playlistItemId) {
