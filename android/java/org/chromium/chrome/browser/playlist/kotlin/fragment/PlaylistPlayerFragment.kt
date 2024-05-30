@@ -693,9 +693,9 @@ class PlaylistPlayerFragment : Fragment(R.layout.fragment_playlist_player), Play
     }
 
     override fun onPlaylistItemClick(position: Int) {
-        if (!PlaylistUtils.isPlaylistItemCached(mPlaylistItems[position])) {
-            return
-        }
+        // if (!PlaylistUtils.isPlaylistItemCached(mPlaylistItems[position])) {
+        //     return
+        // }
         mPlayerView.player?.seekTo(position, 0)
         mMainLayout.smoothToBottom()
     }
