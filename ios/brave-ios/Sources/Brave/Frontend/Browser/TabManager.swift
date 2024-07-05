@@ -132,7 +132,8 @@ class TabManager: NSObject {
     self.privateBrowsingManager = privateBrowsingManager
     super.init()
 
-    self.navDelegate.tabManager = self
+    // FIXME: Nav Delegate
+//    self.navDelegate.tabManager = self
     addNavigationDelegate(self)
 
     Preferences.Shields.blockImages.observe(from: self)
@@ -162,7 +163,7 @@ class TabManager: NSObject {
     syncTabsTask?.cancel()
   }
 
-  func addNavigationDelegate(_ delegate: WKNavigationDelegate) {
+  func addNavigationDelegate(_ delegate: CWVNavigationDelegate) {
     assert(Thread.isMainThread)
 
     self.navDelegate.insert(delegate)
@@ -192,7 +193,7 @@ class TabManager: NSObject {
     return allTabs[index]
   }
 
-  subscript(webView: WKWebView) -> Tab? {
+  subscript(webView: BraveWebView) -> Tab? {
     assert(Thread.isMainThread)
 
     for tab in allTabs where tab.webView === webView {
@@ -201,6 +202,17 @@ class TabManager: NSObject {
 
     return nil
   }
+
+  subscript(webView: CWVWebView) -> Tab? {
+    assert(Thread.isMainThread)
+
+    for tab in allTabs where tab.webView == webView {
+      return tab
+    }
+
+    return nil
+  }
+
 
   var currentDisplayedIndex: Int? {
     assert(Thread.isMainThread)
@@ -375,7 +387,7 @@ class TabManager: NSObject {
 
     if let selectedTab = selectedTab,
       let webView = selectedTab.webView,
-      webView.url == nil
+      webView.lastCommittedURL == nil
     {
 
       selectedTab.url = selectedTab.url ?? TabManager.ntpInteralURL
@@ -725,7 +737,7 @@ class TabManager: NSObject {
       Preferences.Privacy.persistentPrivateBrowsing.value ? allTabs : tabs(withType: .regular)
     SessionTab.updateAll(
       tabs: tabs.compactMap({
-        if let sessionData = $0.webView?.sessionData {
+        if let sessionData = $0.webView?.underlyingWebView?.sessionData {
           return ($0.id, sessionData, $0.title, $0.url ?? TabManager.ntpInteralURL)
         }
         return nil
@@ -741,7 +753,7 @@ class TabManager: NSObject {
     }
     SessionTab.update(
       tabId: tab.id,
-      interactionState: tab.webView?.sessionData ?? Data(),
+      interactionState: tab.webView?.underlyingWebView?.sessionData ?? Data(),
       title: tab.title,
       url: tab.url ?? TabManager.ntpInteralURL
     )
@@ -869,7 +881,7 @@ class TabManager: NSObject {
 
     // Start a task to delete all data for this etldP1
     // The task may be delayed in case we want to cancel it
-    let dataStore = tab.webView?.configuration.websiteDataStore
+    let dataStore = tab.webView?.underlyingWebView?.configuration.websiteDataStore
     await dataStore?.deleteDataRecords(
       forDomain: etldP1
     )
@@ -1024,7 +1036,7 @@ class TabManager: NSObject {
 
   func removeAllBrowsingDataForTab(_ tab: Tab, completionHandler: @escaping () -> Void = {}) {
     let dataTypes = WKWebsiteDataStore.allWebsiteDataTypes()
-    tab.webView?.configuration.websiteDataStore.removeData(
+    tab.webView?.underlyingWebView?.configuration.websiteDataStore.removeData(
       ofTypes: dataTypes,
       modifiedSince: Date.distantPast,
       completionHandler: completionHandler
@@ -1147,7 +1159,7 @@ class TabManager: NSObject {
     assert(Thread.isMainThread)
 
     let tab = allTabs.filter {
-      guard let webViewURL = $0.webView?.url, $0.isPrivate else {
+      guard let webViewURL = $0.webView?.lastCommittedURL, $0.isPrivate else {
         return false
       }
 
@@ -1455,68 +1467,73 @@ class TabManager: NSObject {
     return SavedRecentlyClosed(
       url: fetchedTabURL,
       title: tab.displayTitle,
-      interactionState: tab.webView?.sessionData,
+      interactionState: tab.webView?.underlyingWebView?.sessionData,
       order: -1
     )
   }
 }
 
+extension TabManager: CWVNavigationDelegate {
+
+}
+
 extension TabManager: WKNavigationDelegate {
-
-  // Note the main frame JSContext (i.e. document, window) is not available yet.
-  func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-    if let tab = self[webView] {
-      tab.contentBlocker.clearPageStats()
-    }
-  }
-
-  // The main frame JSContext is available, and DOM parsing has begun.
-  // Do not excute JS at this point that requires running prior to DOM parsing.
-  func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
-  }
-
-  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-    // only store changes if this is not an error page
-    // as we current handle tab restore as error page redirects then this ensures that we don't
-    // call storeChanges unnecessarily on startup
-
-    if let url = webView.url {
-      // tab restore uses internal pages,
-      // so don't call storeChanges unnecessarily on startup
-      if InternalURL(url)?.isSessionRestore == true {
-        return
-      }
-
-      if let tab = tabForWebView(webView) {
-        if Preferences.Privacy.privateBrowsingOnly.value
-          || (tab.isPrivate && !Preferences.Privacy.persistentPrivateBrowsing.value)
-        {
-          return
-        }
-
-        preserveScreenshot(for: tab)
-        saveTab(tab)
-      }
-    }
-  }
-
-  func tabForWebView(_ webView: WKWebView) -> Tab? {
-    objc_sync_enter(self)
-    defer { objc_sync_exit(self) }
-
-    return allTabs.first(where: { $0.webView === webView })
-  }
-
-  func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-  }
-
-  /// Called when the WKWebView's content process has gone away. If this happens for the currently selected tab
-  /// then we immediately reload it.
-  func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
-    if let tab = selectedTab, tab.webView == webView {
-      webView.reload()
-    }
-  }
+  // FIXME: Nav Delegate
+//
+//  // Note the main frame JSContext (i.e. document, window) is not available yet.
+//  func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+//    if let tab = self[webView] {
+//      tab.contentBlocker.clearPageStats()
+//    }
+//  }
+//
+//  // The main frame JSContext is available, and DOM parsing has begun.
+//  // Do not excute JS at this point that requires running prior to DOM parsing.
+//  func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+//  }
+//
+//  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+//    // only store changes if this is not an error page
+//    // as we current handle tab restore as error page redirects then this ensures that we don't
+//    // call storeChanges unnecessarily on startup
+//
+//    if let url = webView.lastCommittedURL {
+//      // tab restore uses internal pages,
+//      // so don't call storeChanges unnecessarily on startup
+//      if InternalURL(url)?.isSessionRestore == true {
+//        return
+//      }
+//
+//      if let tab = tabForWebView(webView) {
+//        if Preferences.Privacy.privateBrowsingOnly.value
+//          || (tab.isPrivate && !Preferences.Privacy.persistentPrivateBrowsing.value)
+//        {
+//          return
+//        }
+//
+//        preserveScreenshot(for: tab)
+//        saveTab(tab)
+//      }
+//    }
+//  }
+//
+//  func tabForWebView(_ webView: WKWebView) -> Tab? {
+//    objc_sync_enter(self)
+//    defer { objc_sync_exit(self) }
+//
+//    return allTabs.first(where: { $0.webView === webView })
+//  }
+//
+//  func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+//  }
+//
+//  /// Called when the WKWebView's content process has gone away. If this happens for the currently selected tab
+//  /// then we immediately reload it.
+//  func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+//    if let tab = selectedTab, tab.webView == webView {
+//      webView.reload()
+//    }
+//  }
 }
 
 // MARK: - TabManagerDelegate optional methods.
@@ -1534,7 +1551,7 @@ extension TabManager: PreferencesObserver {
       let allowPopups = !Preferences.General.blockPopups.value
       // Each tab may have its own configuration, so we should tell each of them in turn.
       allTabs.forEach {
-        $0.webView?.configuration.preferences.javaScriptCanOpenWindowsAutomatically = allowPopups
+        $0.webView?.underlyingWebView?.configuration.preferences.javaScriptCanOpenWindowsAutomatically = allowPopups
       }
       // The default tab configurations also need to change.
       configuration.preferences.javaScriptCanOpenWindowsAutomatically = allowPopups
