@@ -2358,7 +2358,7 @@ public class BrowserViewController: UIViewController {
     statusBarOverlay.backgroundColor = color
   }
 
-  func navigateInTab(tab: Tab, to navigation: WKNavigation? = nil) {
+  func navigateInTab(tab: Tab) {
     tabManager.expireSnackbars()
 
     guard let webView = tab.webView else {
@@ -2642,8 +2642,7 @@ extension BrowserViewController: TabDelegate {
     // Observers that live as long as the tab. Make sure these are all cleared in willDeleteWebView below!
     KVOs.forEach { webView.addObserver(self, forKeyPath: $0.keyPath, options: .new, context: nil) }
     webViewKVOs.forEach { webView.underlyingWebView?.addObserver(self, forKeyPath: $0.keyPath, options: .new, context: nil )}
-    // FIXME: UI Delegate
-//    webView.uiDelegate = self
+    webView.uiDelegate = self
 
     var injectedScripts: [TabContentScript] = [
       ReaderModeScriptHandler(tab: tab),
