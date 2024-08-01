@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/types/expected.h"
 
 namespace brave_wallet {
 
@@ -30,6 +31,9 @@ inline constexpr size_t kOrchardNullifierSize = 32u;
 inline constexpr size_t kOrchardCmxSize = 32u;
 inline constexpr size_t kOrchardEphemeralKeySize = 32u;
 inline constexpr size_t kOrchardCipherTextSize = 52u;
+inline constexpr size_t kOrchardShardTreeHashSize = 32u;
+inline constexpr uint8_t kOrchardShardSubtreeHeight = 8;
+inline constexpr uint8_t kOrchardShardTreeHeight = 32;
 
 using OrchardFullViewKey = std::array<uint8_t, kOrchardFullViewKeySize>;
 
@@ -55,6 +59,8 @@ enum class OrchardAddressKind {
   // Internal "change" address.
   Internal
 };
+
+enum class ShardTreeRetention { Ephemeral, Marked, Checkpoint };
 
 using ParsedAddress = std::pair<ZCashAddrType, std::vector<uint8_t>>;
 
@@ -93,6 +99,138 @@ struct OrchardNote {
   uint32_t amount = 0;
 
   bool operator==(const OrchardNote& other) const = default;
+};
+
+using CheckpointTreeState = std::optional<uint32_t>;
+using OrchardShardRootHash = std::array<uint8_t, kOrchardShardTreeHashSize>;
+
+struct OrchardCheckpoint {
+  OrchardCheckpoint();
+  OrchardCheckpoint(CheckpointTreeState, std::vector<uint32_t>);
+  ~OrchardCheckpoint();
+  OrchardCheckpoint(const OrchardCheckpoint& other);
+  OrchardCheckpoint& operator=(const OrchardCheckpoint& other);
+  OrchardCheckpoint(OrchardCheckpoint&& other);
+  OrchardCheckpoint& operator=(OrchardCheckpoint&& other);
+
+  bool operator==(const OrchardCheckpoint& other) const = default;
+
+  CheckpointTreeState tree_state_position;
+  std::vector<uint32_t> marks_removed;
+};
+
+struct OrchardCheckpointBundle {
+  OrchardCheckpointBundle(uint32_t checkpoint_id, OrchardCheckpoint);
+  ~OrchardCheckpointBundle();
+  OrchardCheckpointBundle(const OrchardCheckpointBundle& other);
+  OrchardCheckpointBundle& operator=(const OrchardCheckpointBundle& other);
+  OrchardCheckpointBundle(OrchardCheckpointBundle&& other);
+  OrchardCheckpointBundle& operator=(OrchardCheckpointBundle&& other);
+
+  bool operator==(const OrchardCheckpointBundle& other) const = default;
+
+  uint32_t checkpoint_id;
+  OrchardCheckpoint checkpoint;
+};
+
+struct OrchardShardAddress {
+  uint8_t level = 0;
+  uint32_t index = 0;
+
+  bool operator==(const OrchardShardAddress& other) const = default;
+};
+
+struct OrchardCap {
+  OrchardCap(std::vector<uint8_t> data);
+  ~OrchardCap();
+
+  OrchardCap(const OrchardCap& other);
+  OrchardCap& operator=(const OrchardCap& other);
+  OrchardCap(OrchardCap&& other);
+  OrchardCap& operator=(OrchardCap&& other);
+
+  std::array<uint8_t, kOrchardShardTreeHashSize> root_hash;
+  std::vector<uint8_t> data;
+};
+
+struct OrchardShard {
+  OrchardShard();
+  OrchardShard(OrchardShardAddress shard_addr,
+               OrchardShardRootHash shard_hash,
+               std::vector<uint8_t> shard_data,
+               bool contains_marked);
+  ~OrchardShard();
+
+  OrchardShard(const OrchardShard& other);
+  OrchardShard& operator=(const OrchardShard& other);
+  OrchardShard(OrchardShard&& other);
+  OrchardShard& operator=(OrchardShard&& other);
+
+  bool operator==(const OrchardShard& other) const = default;
+
+  OrchardShardAddress address;
+  OrchardShardRootHash root_hash;
+  std::vector<uint8_t> shard_data;
+  size_t subtree_end_height = 0;
+  bool contains_marked = false;
+};
+
+struct OrchardCommitment {
+  uint32_t block_id = 0;
+  uint32_t index = 0;
+  std::array<uint8_t, kOrchardCmxSize> cmu;
+  ShardTreeRetention retention;
+};
+
+struct FrontierChainState {
+  uint32_t frontier_block_height;
+  uint32_t frontier_orchard_tree_size;
+  std::string frontier_tree_state;
+};
+
+class OrchardShardTreeDelegate {
+ public:
+  enum Error { kStorageError = 0, kConsistensyError = 1 };
+
+  virtual ~OrchardShardTreeDelegate() {}
+
+  virtual base::expected<std::optional<OrchardCap>, Error> GetCap() const = 0;
+  virtual base::expected<bool, Error> PutCap(OrchardCap shard) = 0;
+
+  virtual base::expected<std::optional<uint32_t>, Error> GetLatestShardIndex()
+      const = 0;
+  virtual base::expected<bool, Error> PutShard(OrchardShard shard) = 0;
+  virtual base::expected<std::optional<OrchardShard>, Error> GetShard(
+      OrchardShardAddress address) const = 0;
+  virtual base::expected<std::optional<OrchardShard>, Error> LastShard(
+      uint8_t shard_height) const = 0;
+  virtual base::expected<bool, Error> Truncate(uint32_t block_height) = 0;
+
+  virtual base::expected<bool, Error> TruncateCheckpoints(
+      uint32_t checkpoint_id) = 0;
+  virtual base::expected<size_t, Error> CheckpointCount() const = 0;
+  virtual base::expected<std::optional<uint32_t>, Error> MinCheckpointId()
+      const = 0;
+  virtual base::expected<std::optional<uint32_t>, Error> MaxCheckpointId()
+      const = 0;
+  virtual base::expected<std::optional<uint32_t>, Error> GetCheckpointAtDepth(
+      uint32_t depth) const = 0;
+  virtual base::expected<std::optional<OrchardCheckpointBundle>, Error>
+  GetCheckpoint(uint32_t checkpoint_id) const = 0;
+  virtual base::expected<std::vector<OrchardCheckpointBundle>, Error>
+  GetCheckpoints(size_t limit) const = 0;
+  virtual base::expected<bool, Error> RemoveCheckpointAt(uint32_t depth) = 0;
+  virtual base::expected<bool, Error> RemoveCheckpoint(
+      uint32_t checkpoint_id) = 0;
+  virtual base::expected<bool, Error> AddCheckpoint(
+      uint32_t id,
+      OrchardCheckpoint checkpoint) = 0;
+  virtual base::expected<bool, Error> UpdateCheckpoint(
+      uint32_t id,
+      OrchardCheckpoint checkpoint) = 0;
+
+  virtual base::expected<std::vector<OrchardShardAddress>, Error> GetShardRoots(
+      uint8_t shard_level) const = 0;
 };
 
 bool OutputZCashAddressSupported(const std::string& address, bool is_testnet);
