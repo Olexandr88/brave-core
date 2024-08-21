@@ -18,7 +18,6 @@
 #include "brave/components/brave_rewards/common/mojom/rewards.mojom.h"
 #include "brave/components/brave_rewards/common/pref_names.h"
 #include "brave/components/brave_rewards/core/global_constants.h"
-#include "brave/components/greaselion/browser/buildflags/buildflags.h"
 #include "brave/components/l10n/common/test/scoped_default_locale.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -67,12 +66,7 @@ class RewardsServiceTest : public testing::Test {
         std::make_unique<brave_l10n::test::ScopedDefaultLocale>("en_US");
     profile_ = CreateBraveRewardsProfile(temp_dir_.GetPath());
     ASSERT_TRUE(profile_.get());
-#if BUILDFLAG(ENABLE_GREASELION)
-    rewards_service_ =
-        std::make_unique<RewardsServiceImpl>(profile(), nullptr, nullptr);
-#else
     rewards_service_ = std::make_unique<RewardsServiceImpl>(profile(), nullptr);
-#endif
     ASSERT_TRUE(rewards_service());
     observer_ = std::make_unique<MockRewardsServiceObserver>();
     rewards_service_->AddObserver(observer_.get());

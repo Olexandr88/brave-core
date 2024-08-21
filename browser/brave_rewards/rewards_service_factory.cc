@@ -15,7 +15,6 @@
 #include "brave/components/brave_rewards/browser/rewards_service.h"
 #include "brave/components/brave_rewards/browser/rewards_service_impl.h"
 #include "brave/components/brave_rewards/browser/rewards_service_observer.h"
-#include "brave/components/greaselion/browser/buildflags/buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,11 +27,6 @@
 #include "brave/browser/brave_rewards/extension_rewards_notification_service_observer.h"
 #include "brave/browser/brave_rewards/extension_rewards_service_observer.h"
 #include "extensions/browser/event_router_factory.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GREASELION)
-#include "brave/browser/greaselion/greaselion_service_factory.h"
-#include "brave/components/greaselion/browser/greaselion_service.h"
 #endif
 
 namespace brave_rewards {
@@ -66,9 +60,6 @@ RewardsServiceFactory::RewardsServiceFactory()
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(extensions::EventRouterFactory::GetInstance());
 #endif
-#if BUILDFLAG(ENABLE_GREASELION)
-  DependsOn(greaselion::GreaselionServiceFactory::GetInstance());
-#endif
   DependsOn(brave_wallet::BraveWalletServiceFactory::GetInstance());
 }
 
@@ -86,16 +77,8 @@ KeyedService* RewardsServiceFactory::BuildServiceInstanceFor(
 #endif
   auto* brave_wallet_service =
       brave_wallet::BraveWalletServiceFactory::GetServiceForContext(context);
-#if BUILDFLAG(ENABLE_GREASELION)
-  greaselion::GreaselionService* greaselion_service =
-      greaselion::GreaselionServiceFactory::GetForBrowserContext(context);
-  std::unique_ptr<RewardsServiceImpl> rewards_service(
-      new RewardsServiceImpl(Profile::FromBrowserContext(context),
-                             greaselion_service, brave_wallet_service));
-#else
   std::unique_ptr<RewardsServiceImpl> rewards_service(new RewardsServiceImpl(
       Profile::FromBrowserContext(context), brave_wallet_service));
-#endif
   rewards_service->Init(std::move(extension_observer),
                         std::move(notification_observer));
   return rewards_service.release();

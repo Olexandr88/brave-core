@@ -17,8 +17,6 @@ static_library("browser") {
     "diagnostic_log.cc",
     "diagnostic_log.h",
     "logging.h",
-    "publisher_utils.cc",
-    "publisher_utils.h",
     "rewards_notification_service.cc",
     "rewards_notification_service.h",
     "rewards_notification_service_impl.cc",

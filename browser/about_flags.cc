@@ -736,6 +736,14 @@
               brave_rewards::features::kAnimatedBackgroundFeature),            \
       },                                                                       \
       {                                                                        \
+          "brave-rewards-platorm-creator-detection",                           \
+          "Detect Brave Creators on media platform sites",                     \
+          "Enables detection of Brave Creator pages on media platform sites.", \
+          kOsDesktop | kOsAndroid,                                             \
+          FEATURE_VALUE_TYPE(                                                  \
+              brave_rewards::features::kPlatformCreatorDetectionFeature),      \
+      },                                                                       \
+      {                                                                        \
           "brave-ads-should-launch-brave-ads-as-an-in-process-service",        \
           "Launch Brave Ads as an in-process service",                         \
           "Launch Brave Ads as an in-process service removing the utility "    \

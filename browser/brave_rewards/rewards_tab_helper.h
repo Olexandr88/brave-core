@@ -13,10 +13,14 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "brave/components/brave_rewards/browser/rewards_service_observer.h"
+#include "brave/components/brave_rewards/common/mojom/rewards.mojom.h"
 #include "build/build_config.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -36,11 +40,16 @@ class RewardsTabHelper : public content::WebContentsUserData<RewardsTabHelper>,
 #if !BUILDFLAG(IS_ANDROID)
                          public BrowserListObserver,
 #endif
+                         public mojom::CreatorDetectionHost,
                          public RewardsServiceObserver {
  public:
   RewardsTabHelper(const RewardsTabHelper&) = delete;
   RewardsTabHelper& operator=(const RewardsTabHelper&) = delete;
   ~RewardsTabHelper() override;
+
+  static void BindCreatorDetectionHost(
+      mojo::PendingAssociatedReceiver<mojom::CreatorDetectionHost> receiver,
+      content::RenderFrameHost* rfh);
 
   class Observer : public base::CheckedObserver {
    public:
@@ -68,8 +77,7 @@ class RewardsTabHelper : public content::WebContentsUserData<RewardsTabHelper>,
   // content::WebContentsObserver:
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void ResourceLoadComplete(
       content::RenderFrameHost* render_frame_host,
       const content::GlobalRequestID& request_id,
@@ -88,12 +96,20 @@ class RewardsTabHelper : public content::WebContentsUserData<RewardsTabHelper>,
   // RewardsServiceObserver:
   void OnRewardsInitialized(RewardsService* rewards_service) override;
 
+  // mojom::CreatorDetectionHost:
+  void OnCreatorDetected(const std::string& id,
+                         const std::string& name,
+                         const std::string& url,
+                         const std::string& image_url) override;
+
   void MaybeSavePublisherInfo();
 
   SessionID tab_id_;
   raw_ptr<RewardsService> rewards_service_ = nullptr;  // NOT OWNED
   base::ObserverList<Observer> observer_list_;
   std::string publisher_id_;
+  content::RenderFrameHostReceiverSet<mojom::CreatorDetectionHost>
+      creator_detection_receivers_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
