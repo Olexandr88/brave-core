@@ -3,6 +3,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
 // clang-format off
