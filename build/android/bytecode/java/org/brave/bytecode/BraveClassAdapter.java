@@ -120,6 +120,7 @@ public class BraveClassAdapter {
         chain = new BraveVariationsSeedFetcherClassAdapter(chain);
         chain = new BraveWebsiteClassAdapter(chain);
         chain = new BraveWebsitePermissionsFetcherClassAdapter(chain);
+        chain = new BraveUndoBarControllerClassAdapter(chain);
         return chain;
     }
 }
