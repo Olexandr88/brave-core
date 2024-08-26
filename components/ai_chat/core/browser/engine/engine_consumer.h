@@ -82,6 +82,8 @@ class EngineConsumer {
   }
 
  protected:
+  bool ShouldDoEarlyCompletion(
+      const ConversationHistory& conversation_history) const;
   int max_page_content_length_ = 0;
 };
 

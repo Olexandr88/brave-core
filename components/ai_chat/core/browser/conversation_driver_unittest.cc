@@ -950,6 +950,15 @@ TEST_P(PageContentRefineTest, TextEmbedder) {
     }
     conversation_driver_->PerformAssistantGeneration(
         test_case.prompt, 0, test_case.page_content, false, "");
+    if (test_case.should_refine_page_content && IsPageContentRefineEnabled()) {
+      const auto& conversation_history =
+          conversation_driver_->GetConversationHistory();
+      ASSERT_FALSE(conversation_history.empty());
+      ASSERT_FALSE(conversation_history.back()->events->empty());
+      EXPECT_TRUE(conversation_history.back()
+                      ->events->back()
+                      ->is_page_content_refine_event());
+    }
   }
 }
 
@@ -1014,6 +1023,16 @@ TEST_P(PageContentRefineTest, TextEmbedderInitialized) {
     }
     conversation_driver_->PerformAssistantGeneration(
         "prompt", 0, std::string(max_page_content_length + 1, 'A'), false, "");
+
+    if (test_case.is_initialized || test_case.initialize_result) {
+      const auto& conversation_history =
+          conversation_driver_->GetConversationHistory();
+      ASSERT_FALSE(conversation_history.empty());
+      ASSERT_FALSE(conversation_history.back()->events->empty());
+      EXPECT_TRUE(conversation_history.back()
+                      ->events->back()
+                      ->is_page_content_refine_event());
+    }
   }
 }
 
