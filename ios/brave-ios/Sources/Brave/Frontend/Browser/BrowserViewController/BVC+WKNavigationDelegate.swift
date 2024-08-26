@@ -60,9 +60,6 @@ extension UTType {
 extension BrowserViewController: CWVNavigationDelegate {
   public func webViewDidCommitNavigation(_ webView: CWVWebView) {
     guard let tab = tab(for: webView) else { return }
-    
-    // Reset the stored http request now that load has committed.
-    tab.upgradedHTTPSRequest = nil
 
     // Set the committed url which will also set tab.url
     tab.committedURL = webView.lastCommittedURL
@@ -644,26 +641,6 @@ extension BrowserViewController: CWVNavigationDelegate {
     let response = navigationResponse.response
     let responseURL = response.url
     let tab = tab(for: webView)
-    let isInvalid: Bool
-    if let httpResponse = response as? HTTPURLResponse {
-      isInvalid = httpResponse.statusCode >= 400
-    } else {
-      isInvalid = true
-    }
-
-    // Handle invalid upgrade to https
-    if isInvalid,
-      navigationResponse.isForMainFrame,
-      let responseURL = responseURL,
-      let tab = tab,
-      let originalResponse = handleInvalidHTTPSUpgrade(
-        tab: tab,
-        responseURL: responseURL
-      )
-    {
-      tab.loadRequest(originalResponse)
-      return .cancel
-    }
 
     // Store the response in the tab
     if let responseURL = responseURL {
@@ -808,18 +785,6 @@ extension BrowserViewController: CWVNavigationDelegate {
 
   public func webView(_ webView: CWVWebView, didFailNavigationWithError error: any Error) {
     guard let tab = tab(for: webView), let webView = tab.webView else { return }
-
-    // Handle invalid upgrade to https
-    // FIXME: Replace with HTTPS upgrade tab helper
-    if let responseURL = webView.lastCommittedURL,
-      let response = handleInvalidHTTPSUpgrade(
-        tab: tab,
-        responseURL: responseURL
-      )
-    {
-      tab.loadRequest(response)
-      return
-    }
 
     // Ignore the "Frame load interrupted" error that is triggered when we cancel a request
     // to open an external application and hand it over to UIApplication.openURL(). The result
@@ -1773,61 +1738,7 @@ extension BrowserViewController {
       return request
     }
 
-    // Attempt to upgrade to HTTPS
-    // FIXME: Replace with HTTPS upgrade tab helper
-    if FeatureList.kBraveHttpsByDefault.enabled, ShieldPreferences.httpsUpgradeLevel.isEnabled,
-      let upgradedURL = braveCore.httpsUpgradeExceptionsService.upgradeToHTTPS(for: requestURL)
-    {
-      guard tab.upgradedHTTPSRequest?.url?.baseDomain != requestURL.baseDomain else {
-        // Avoid circular upgrades. This should be nil or we already tried to upgrade this
-        // and somehow it went back to http (i.e. server side redirect).
-        // We handle this as an invalid https upgrade right away
-        tab.upgradedHTTPSRequest = navigationAction.request
-        return handleInvalidHTTPSUpgrade(tab: tab, responseURL: upgradedURL)
-      }
-      Self.log.debug(
-        "Upgrading `\(requestURL.absoluteString)` to HTTPS"
-      )
-
-      tab.upgradedHTTPSRequest = navigationAction.request
-      var request = navigationAction.request
-      request.url = upgradedURL
-      return request
-    }
-
     return nil
-  }
-
-  /// Upon an invalid response, check that we need to roll back any HTTPS upgrade
-  /// or show the interstitial page
-  private func handleInvalidHTTPSUpgrade(tab: Tab, responseURL: URL) -> URLRequest? {
-    // Handle invalid upgrade to https
-    guard responseURL.scheme == "https",
-      let originalRequest = tab.upgradedHTTPSRequest,
-      let originalURL = originalRequest.url,
-      responseURL.baseDomain == originalURL.baseDomain
-    else {
-      return nil
-    }
-
-    if FeatureList.kHttpsOnlyMode.enabled, ShieldPreferences.httpsUpgradeLevel.isStrict,
-      let url = originalURL.encodeEmbeddedInternalURL(for: .httpBlocked)
-    {
-      Self.log.debug(
-        "Show http blocked interstitial for `\(originalURL.absoluteString)`"
-      )
-
-      let request = PrivilegedRequest(url: url) as URLRequest
-      return request
-    } else {
-      Self.log.debug(
-        "Revert HTTPS upgrade for `\(originalURL.absoluteString)`"
-      )
-
-      tab.upgradedHTTPSRequest = nil
-      braveCore.httpsUpgradeExceptionsService.addException(for: originalURL)
-      return originalRequest
-    }
   }
 }
 

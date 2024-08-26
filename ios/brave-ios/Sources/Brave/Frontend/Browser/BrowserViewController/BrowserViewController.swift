@@ -325,6 +325,7 @@ public class BrowserViewController: UIViewController {
       rewards: rewards,
       tabGeneratorAPI: braveCore.tabGeneratorAPI,
       historyAPI: braveCore.historyAPI,
+      browserPrefs: braveCore.browserPrefs,
       privateBrowsingManager: privateBrowsingManager
     )
 
@@ -495,7 +496,6 @@ public class BrowserViewController: UIViewController {
     Preferences.Playlist.syncSharedFoldersAutomatically.observe(from: self)
     Preferences.NewTabPage.backgroundMediaTypeRaw.observe(from: self)
     ShieldPreferences.blockAdsAndTrackingLevelRaw.observe(from: self)
-    ShieldPreferences.httpsUpgradeLevelRaw.observe(from: self)
     Preferences.Privacy.screenTimeEnabled.observe(from: self)
 
     pageZoomListener = NotificationCenter.default.addObserver(
@@ -2625,7 +2625,6 @@ extension BrowserViewController: TabDelegate {
       ReaderModeScriptHandler(tab: tab),
       SessionRestoreScriptHandler(tab: tab),
       BlockedDomainScriptHandler(tab: tab),
-      HTTPBlockedScriptHandler(tab: tab, exceptionService: braveCore.httpsUpgradeExceptionsService),
       PrintScriptHandler(browserController: self, tab: tab),
       CustomSearchScriptHandler(tab: tab),
       DarkReaderScriptHandler(tab: tab),
@@ -3255,9 +3254,6 @@ extension BrowserViewController: PreferencesObserver {
             ?? Preferences.General.defaultPageZoomLevel.value
         $0.webView?.setValue(zoomLevel, forKey: PageZoomHandler.propertyName)
       })
-    case ShieldPreferences.httpsUpgradeLevelRaw.key:
-      tabManager.reset()
-      tabManager.reloadSelectedTab()
     case Preferences.Privacy.blockAllCookies.key,
       Preferences.Shields.googleSafeBrowsing.key:
       // All `block all cookies` toggle requires a hard reset of Webkit configuration.
