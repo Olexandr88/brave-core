@@ -4,9 +4,10 @@
 // You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useHistory } from 'react-router'
 import { skipToken } from '@reduxjs/toolkit/dist/query'
 
-// types
+// Types
 import {
   MeldCryptoCurrency,
   MeldFiatCurrency,
@@ -17,7 +18,13 @@ import {
   CryptoWidgetCustomerData
 } from '../../../../constants/types'
 
-// api
+// Hooks
+import {
+  useDebouncedCallback //
+} from '../../swap/hooks/useDebouncedCallback'
+import { useQuery } from '../../../../common/hooks/use-query'
+
+// Queries
 import {
   useGetDefaultFiatCurrencyQuery,
   useGetMeldFiatCurrenciesQuery,
@@ -26,30 +33,37 @@ import {
   useGetDefaultCountryQuery,
   useGenerateMeldCryptoQuotesMutation,
   useGetTokenSpotPricesQuery,
-  walletApi,
   useGetMeldServiceProvidersQuery,
   useGetMeldPaymentMethodsQuery,
   useCreateMeldBuyWidgetMutation
 } from '../../../../common/slices/api.slice'
-import { useAccountsQuery } from '../../../../common/slices/api.slice.extra'
+import {
+  useAccountFromAddressQuery,
+  useAccountsQuery
+} from '../../../../common/slices/api.slice.extra'
 
-// constants
+// Constants
 import { querySubscriptionOptions60s } from '../../../../common/slices/constants'
 
-// utils
+// Utils
 import Amount from '../../../../utils/amount'
-import { getAssetSymbol, getAssetPriceId } from '../../../../utils/meld_utils'
-import { useDebouncedCallback } from './useDebouncedCallback'
+import {
+  getAssetSymbol,
+  getAssetPriceId,
+  getMeldTokensCoinType
+} from '../../../../utils/meld_utils'
+import { makeFundWalletRoute } from '../../../../utils/routes-utils'
 
 export type BuyParamOverrides = {
   country?: string
+  paymentMethod?: MeldPaymentMethod
   sourceCurrencyCode?: string
-  destionationCurrencyCode?: string
+  destinationCurrencyCode?: string
   amount?: string
   account?: string
 }
 
-const defaultAsset: MeldCryptoCurrency = {
+const DEFAULT_ASSET: MeldCryptoCurrency = {
   'currencyCode': 'ETH',
   'name': 'Ethereum',
   'chainCode': 'ETH',
@@ -59,11 +73,36 @@ const defaultAsset: MeldCryptoCurrency = {
   'symbolImageUrl': 'https://images-currency.meld.io/crypto/ETH/symbol.png'
 }
 
+const DEFAULT_PAYMENT_METHOD: MeldPaymentMethod = {
+  logoImages: {
+    darkShortUrl: '',
+    darkUrl:
+      'https://images-paymentMethod.meld.io/CREDIT_DEBIT_CARD/logo_dark.png',
+    lightShortUrl: '',
+    lightUrl:
+      'https://images-paymentMethod.meld.io/CREDIT_DEBIT_CARD/logo_light.png'
+  },
+  name: 'Credit & Debit Card',
+  paymentMethod: 'CREDIT_DEBIT_CARD',
+  paymentType: 'CARD'
+}
+
+const getFirstAccountByCoinType = (
+  coin: BraveWallet.CoinType,
+  accounts: BraveWallet.AccountInfo[]
+) => {
+  return accounts.filter((account) => account.accountId.coin === coin)[0]
+}
+
 export const useBuy = () => {
-  // queries
+  // Routing
+  const history = useHistory()
+  const query = useQuery()
+
+  // Queries
   const { data: defaultFiatCurrency = 'USD' } = useGetDefaultFiatCurrencyQuery()
   const { data: fiatCurrencies } = useGetMeldFiatCurrenciesQuery()
-  const { data: cryptoCurrencies, isLoading: isLoadingAssets } =
+  const { data: meldSupportedBuyAssets, isLoading: isLoadingAssets } =
     useGetMeldCryptoCurrenciesQuery()
   const { accounts } = useAccountsQuery()
   const { data: countries, isLoading: isLoadingCountries } =
@@ -73,25 +112,26 @@ export const useBuy = () => {
     useGetMeldServiceProvidersQuery()
   const { data: paymentMethods, isLoading: isLoadingPaymentMethods } =
     useGetMeldPaymentMethodsQuery()
+  const { account: accountFromParams } = useAccountFromAddressQuery(
+    query.get('accountId') ?? undefined
+  )
+  const chainId = query.get('chainId') ?? undefined
+  const currencyCode = query.get('currencyCode') ?? undefined
 
-  // mutations
+  // Mutations
   const [generateQuotes] = useGenerateMeldCryptoQuotesMutation()
   const [createMeldBuyWidget] = useCreateMeldBuyWidgetMutation()
 
-  // state
-  const [selectedAsset, setSelectedAsset] =
-    useState<MeldCryptoCurrency>(defaultAsset)
+  // State
   const [selectedCurrency, setSelectedCurrency] = useState<
     MeldFiatCurrency | undefined
   >(undefined)
-  const [selectedAccount, setSelectedAccount] =
-    useState<BraveWallet.AccountInfo>(accounts[0])
-  const [amount, setAmount] = useState<string>('')
+  const [amount, setAmount] = useState<string>('100')
   const [abortController, setAbortController] = useState<
     AbortController | undefined
   >(undefined)
   const [isFetchingQuotes, setIsFetchingQuotes] = useState(false)
-  const [buyErrors, setBuyErrors] = useState<string[] | undefined>([])
+  const [hasQuoteError, setHasQuoteError] = useState<boolean>(false)
   const [quotes, setQuotes] = useState<MeldCryptoQuote[]>([])
   const [timeUntilNextQuote, setTimeUntilNextQuote] = useState<
     number | undefined
@@ -99,16 +139,15 @@ export const useBuy = () => {
   const [selectedCountryCode, setSelectedCountryCode] = useState<string>(
     defaultCountryCode || 'US'
   )
-  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
-    MeldPaymentMethod[]
-  >(paymentMethods || [])
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<MeldPaymentMethod>(DEFAULT_PAYMENT_METHOD)
   const [isCreatingWidget, setIsCreatingWidget] = useState(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
 
-  // computed
+  // Memos and Queries
   const tokenPriceIds: string[] = useMemo(() => {
-    return cryptoCurrencies?.map((asset) => getAssetPriceId(asset)) ?? []
-  }, [cryptoCurrencies])
+    return meldSupportedBuyAssets?.map((asset) => getAssetPriceId(asset)) ?? []
+  }, [meldSupportedBuyAssets])
 
   const { data: spotPriceRegistry, isLoading: isLoadingSpotPrices } =
     useGetTokenSpotPricesQuery(
@@ -121,7 +160,29 @@ export const useBuy = () => {
       querySubscriptionOptions60s
     )
 
-  // memos
+  const selectedAsset = useMemo(() => {
+    if (!currencyCode || !meldSupportedBuyAssets || !chainId) {
+      return DEFAULT_ASSET
+    }
+
+    return (
+      meldSupportedBuyAssets.find(
+        (asset) =>
+          asset.currencyCode === currencyCode && asset.chainId === chainId
+      ) ?? DEFAULT_ASSET
+    )
+  }, [meldSupportedBuyAssets, currencyCode, chainId])
+
+  const selectedAccount = useMemo(() => {
+    if (!accountFromParams) {
+      return getFirstAccountByCoinType(
+        getMeldTokensCoinType(selectedAsset),
+        accounts
+      )
+    }
+    return accountFromParams
+  }, [accountFromParams, accounts, selectedAsset])
+
   const selectedAssetSpotPrice = useMemo(() => {
     if (selectedAsset && spotPriceRegistry) {
       return spotPriceRegistry[getAssetPriceId(selectedAsset)]
@@ -142,23 +203,36 @@ export const useBuy = () => {
     return ['', '']
   }, [selectedAssetSpotPrice, selectedAsset, amount])
 
+  const quotesSortedByBestReturn = useMemo(() => {
+    if (quotes.length === 0) {
+      return []
+    }
+    return Array.from(quotes).sort(function (a, b) {
+      return new Amount(b.destinationAmount ?? '0')
+        .minus(a.destinationAmount ?? '0')
+        .toNumber()
+    })
+  }, [quotes])
+
   const filteredQuotes = useMemo(() => {
     if (searchTerm === '') {
-      return quotes
+      return quotesSortedByBestReturn
     }
 
-    return quotes.filter((quote) =>
-      quote.serviceProvider?.toLowerCase().includes(searchTerm.toLowerCase())
+    return quotesSortedByBestReturn.filter(
+      (quote) =>
+        quote.serviceProvider
+          ?.toLowerCase()
+          .startsWith(searchTerm.toLowerCase()) ||
+        quote.serviceProvider?.toLowerCase().includes(searchTerm.toLowerCase())
     )
-  }, [quotes, searchTerm])
+  }, [quotesSortedByBestReturn, searchTerm])
 
-  // methods
+  // Methods
   const reset = useCallback(() => {
-    setSelectedAsset(defaultAsset)
     setSelectedCurrency(undefined)
-    setSelectedAccount(accounts[0])
     setAmount('')
-    setBuyErrors([])
+    setHasQuoteError(false)
     setQuotes([])
     setTimeUntilNextQuote(undefined)
 
@@ -166,7 +240,7 @@ export const useBuy = () => {
       abortController.abort()
       setAbortController(undefined)
     }
-  }, [abortController, accounts])
+  }, [abortController])
 
   const handleQuoteRefreshInternal = useCallback(
     async (overrides: BuyParamOverrides) => {
@@ -179,20 +253,24 @@ export const useBuy = () => {
           overrides.sourceCurrencyCode === undefined
             ? selectedCurrency?.currencyCode
             : overrides.sourceCurrencyCode,
-        destionationCurrencyCode:
-          overrides.destionationCurrencyCode === undefined
+        destinationCurrencyCode:
+          overrides.destinationCurrencyCode === undefined
             ? selectedAsset?.currencyCode
-            : overrides.destionationCurrencyCode,
+            : overrides.destinationCurrencyCode,
         amount: overrides.amount === undefined ? amount : overrides.amount,
         account:
           overrides.account === undefined
             ? selectedAccount.address
-            : overrides.account
+            : overrides.account,
+        paymentMethod:
+          overrides.paymentMethod === undefined
+            ? selectedPaymentMethod
+            : overrides.paymentMethod
       }
 
       if (
         !params.sourceCurrencyCode ||
-        !params.destionationCurrencyCode ||
+        !params.destinationCurrencyCode ||
         !params.account
       ) {
         return
@@ -210,17 +288,18 @@ export const useBuy = () => {
 
       const controller = new AbortController()
       setAbortController(controller)
+      setIsFetchingQuotes(true)
+      setHasQuoteError(false)
 
       let quoteResponse
       try {
-        setIsFetchingQuotes(true)
         quoteResponse = await generateQuotes({
           account: selectedAccount.address,
           amount: amountWrapped.toNumber(),
           country: defaultCountryCode || 'US',
           sourceCurrencyCode: params.sourceCurrencyCode,
-          destionationCurrencyCode: params.destionationCurrencyCode,
-          paymentMethods: selectedPaymentMethods
+          destinationCurrencyCode: params.destinationCurrencyCode,
+          paymentMethod: params.paymentMethod
         }).unwrap()
       } catch (error) {
         console.error('generateQuotes failed', error)
@@ -235,7 +314,7 @@ export const useBuy = () => {
 
       if (quoteResponse?.error) {
         console.error('quoteResponse.error', quoteResponse.error)
-        setBuyErrors(quoteResponse.error)
+        setHasQuoteError(true)
       }
 
       if (quoteResponse?.cryptoQuotes) {
@@ -244,7 +323,7 @@ export const useBuy = () => {
 
       setIsFetchingQuotes(false)
       setAbortController(undefined)
-      setTimeUntilNextQuote(10000)
+      setTimeUntilNextQuote(30000)
     },
     [
       amount,
@@ -253,7 +332,7 @@ export const useBuy = () => {
       selectedAccount?.address,
       selectedAsset?.currencyCode,
       selectedCurrency?.currencyCode,
-      selectedPaymentMethods
+      selectedPaymentMethod
     ]
   )
 
@@ -280,47 +359,68 @@ export const useBuy = () => {
     [handleQuoteRefresh]
   )
 
-  const onSelectCurrency = useCallback(
-    async (currency: MeldFiatCurrency) => {
-      setSelectedCurrency(currency)
-
-      if (selectedAsset) {
-        // TODO(william): Fetch only the spot price for the selected asset
-        walletApi.util.invalidateTags([
-          {
-            type: 'TokenSpotPrices',
-            id: getAssetPriceId(selectedAsset)
-          }
-        ])
-      }
+  const onSelectCountry = useCallback(
+    async (countryCode: string) => {
+      setSelectedCountryCode(countryCode)
+      setQuotes([])
 
       await handleQuoteRefresh({
-        sourceCurrencyCode: currency.currencyCode
-      })
-    },
-    [handleQuoteRefresh, selectedAsset]
-  )
-
-  const onSelectToken = useCallback(
-    async (asset: MeldCryptoCurrency) => {
-      console.log('setting asset to: ', asset)
-      setSelectedAsset(asset)
-
-      await handleQuoteRefresh({
-        destionationCurrencyCode: asset?.currencyCode
+        country: countryCode
       })
     },
     [handleQuoteRefresh]
   )
 
-  const onFlipAmounts = useCallback(async () => {
-    if (!cryptoEstimate) return
+  const onSelectPaymentMethod = useCallback(
+    async (paymentMethod: string) => {
+      const foundMethod =
+        paymentMethods?.find(
+          (method) => method.paymentMethod === paymentMethod
+        ) ?? DEFAULT_PAYMENT_METHOD
+      setSelectedPaymentMethod(foundMethod)
+      setQuotes([])
 
-    setAmount(cryptoEstimate)
-    await handleQuoteRefresh({
-      amount: cryptoEstimate
-    })
-  }, [cryptoEstimate, handleQuoteRefresh])
+      await handleQuoteRefresh({
+        paymentMethod: foundMethod
+      })
+    },
+    [handleQuoteRefresh, paymentMethods]
+  )
+
+  const onSelectCurrency = useCallback(
+    async (currency: MeldFiatCurrency) => {
+      setSelectedCurrency(currency)
+
+      await handleQuoteRefresh({
+        sourceCurrencyCode: currency.currencyCode
+      })
+    },
+    [handleQuoteRefresh]
+  )
+
+  const onSelectToken = useCallback(
+    async (asset: MeldCryptoCurrency) => {
+      const incomingAssetsCoinType = getMeldTokensCoinType(asset)
+      const accountToUse =
+        selectedAccount.accountId.coin !== incomingAssetsCoinType
+          ? getFirstAccountByCoinType(incomingAssetsCoinType, accounts)
+          : selectedAccount
+      history.replace(makeFundWalletRoute(asset, accountToUse))
+      setQuotes([])
+
+      await handleQuoteRefresh({
+        destinationCurrencyCode: asset?.currencyCode
+      })
+    },
+    [handleQuoteRefresh, history, selectedAccount, accounts]
+  )
+
+  const onSelectAccount = useCallback(
+    (account: BraveWallet.AccountInfo) => {
+      history.replace(makeFundWalletRoute(selectedAsset, account))
+    },
+    [selectedAsset, history]
+  )
 
   const onBuy = useCallback(
     async (quote: MeldCryptoQuote) => {
@@ -373,13 +473,7 @@ export const useBuy = () => {
     ]
   )
 
-  // effects
-  useEffect(() => {
-    if (accounts.length > 0 && !selectedAccount) {
-      setSelectedAccount(accounts[0])
-    }
-  }, [accounts, selectedAccount])
-
+  // Effects
   useEffect(() => {
     if (fiatCurrencies && fiatCurrencies.length > 0 && !selectedCurrency) {
       const defaultCurrency = fiatCurrencies.find(
@@ -391,7 +485,7 @@ export const useBuy = () => {
     }
   }, [defaultFiatCurrency, fiatCurrencies, selectedCurrency])
 
-  // fetch quotes in intervals
+  // Fetch quotes in intervals
   useEffect(() => {
     const interval = setInterval(async () => {
       if (timeUntilNextQuote && timeUntilNextQuote !== 0) {
@@ -414,39 +508,35 @@ export const useBuy = () => {
     amount,
     isLoadingAssets,
     isLoadingSpotPrices,
-    cryptoEstimate,
     formattedCryptoEstimate,
-    selectedAssetSpotPrice,
     spotPriceRegistry,
     fiatCurrencies,
-    cryptoCurrencies,
+    cryptoCurrencies: meldSupportedBuyAssets,
     countries,
     accounts,
-    defaultCountryCode,
     defaultFiatCurrency,
-    handleQuoteRefreshInternal,
     isFetchingQuotes,
     quotes,
     filteredQuotes,
-    buyErrors,
-    timeUntilNextQuote,
     onSelectToken,
-    onSelectAccount: setSelectedAccount,
+    onSelectAccount,
     onSelectCurrency,
     onSetAmount,
     serviceProviders,
-    isLoadingServiceProvider,
-    onFlipAmounts,
     selectedCountryCode,
-    setSelectedCountryCode,
-    reset,
     isLoadingPaymentMethods,
     isLoadingCountries,
     paymentMethods,
-    onChangePaymentMethods: setSelectedPaymentMethods,
+    selectedPaymentMethod,
+    onSelectCountry,
+    onSelectPaymentMethod,
     onBuy,
     isCreatingWidget,
     searchTerm,
-    onSearch: setSearchTerm
+    onSearch: setSearchTerm,
+    cryptoEstimate,
+    hasQuoteError,
+    isLoadingServiceProvider,
+    reset
   }
 }

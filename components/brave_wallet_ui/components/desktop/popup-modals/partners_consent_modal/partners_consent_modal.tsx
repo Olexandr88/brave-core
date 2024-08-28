@@ -5,16 +5,20 @@
 
 import * as React from 'react'
 import Checkbox from '@brave/leo/react/checkbox'
+import Button from '@brave/leo/react/button'
 
-// selectors
+// Utils
+import { getLocale, splitStringForTag } from '../../../../../common/locale'
+
+// Selectors
 import { useSafeUISelector } from '../../../../common/hooks/use-safe-selector'
 import { UISelectors } from '../../../../common/selectors'
 
-// assets
+// Assets
 import PageTermsGraphic from './assets/page_terms_graphic.svg'
 import PanelTermsGraphic from './assets/panel_terms_graphic.svg'
 
-// styles
+// Styled Components
 import {
   TermsText,
   TermsDialog,
@@ -22,7 +26,6 @@ import {
   TermsLabel
 } from './partners_consent_modal.style'
 import { Row } from '../../../shared/style'
-import Button from '@brave/leo/react/button'
 
 interface PartnerConsentModalProps {
   isOpen: boolean
@@ -43,6 +46,11 @@ export function PartnersConsentModal({
   // redux
   const isPanel = useSafeUISelector(UISelectors.isPanel)
 
+  const { beforeTag, duringTag } = splitStringForTag(
+    getLocale('braveWalletMeldTermsOfUse'),
+    1
+  )
+
   return (
     <TermsDialog
       isOpen={isOpen}
@@ -51,30 +59,25 @@ export function PartnersConsentModal({
       onClose={onClose}
       showClose
     >
-      <Title slot='title'>Transactions Partner</Title>
+      <Title slot='title'>{getLocale('braveWalletTransactionsPartner')}</Title>
       <Row justifyContent='center'>
         <img
           src={isPanel ? PanelTermsGraphic : PageTermsGraphic}
           alt='Terms Graphic'
         />
       </Row>
-      <TermsText>
-        Buying or selling crypto in Brave Wallet uses Meld.io — an
-        on-ramp/off-ramp aggregator that provides a smooth experience and the
-        best available pricing. Your information will be shared with Meld.io to
-        complete the transaction.
-      </TermsText>
+      <TermsText>{getLocale('braveWalletTransactionPartnerConsent')}</TermsText>
       <Checkbox
         checked={termsAccepted}
         onChange={(e) => setTermsAccepted(e.checked)}
       >
         <TermsLabel>
-          I have read and agree to the{' '}
+          {beforeTag}
           <a
             target='_blank'
-            href='https://brave.com/terms-of-use/'
+            href='https://www.meld.io/terms-of-use'
           >
-            Terms of use
+            {duringTag}
           </a>
         </TermsLabel>
       </Checkbox>
@@ -87,13 +90,13 @@ export function PartnersConsentModal({
           kind='outline'
           onClick={onCancel}
         >
-          Cancel
+          {getLocale('braveWalletButtonCancel')}
         </Button>
         <Button
           isDisabled={!termsAccepted}
           onClick={onContinue}
         >
-          Continue
+          {getLocale('braveWalletButtonContinue')}
         </Button>
       </Row>
     </TermsDialog>
