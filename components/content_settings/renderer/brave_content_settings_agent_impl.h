@@ -22,6 +22,8 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "url/gurl.h"
 
@@ -37,7 +39,6 @@ class BraveContentSettingsAgentImpl
       public brave_shields::mojom::BraveShields {
  public:
   BraveContentSettingsAgentImpl(content::RenderFrame* render_frame,
-                                bool should_whitelist,
                                 std::unique_ptr<Delegate> delegate);
   BraveContentSettingsAgentImpl(const BraveContentSettingsAgentImpl&) = delete;
   BraveContentSettingsAgentImpl& operator=(
@@ -79,6 +80,11 @@ class BraveContentSettingsAgentImpl
                           const GURL& secondary_url);
 
   bool IsScriptTemporilyAllowed(const GURL& script_url);
+
+  // True if `render_frame()` contains content that is allowlisted for content
+  // settings.
+  bool IsAllowlistedForContentSettings(const blink::WebSecurityOrigin& origin,
+                                       const blink::WebURL& document_url) const;
 
   // brave_shields::mojom::BraveShields.
   void SetAllowScriptsFromOriginsOnce(

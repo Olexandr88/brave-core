@@ -19,6 +19,7 @@
 #include "brave/components/brave_shields/core/common/features.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -85,10 +86,8 @@ bool ShouldSkipResource(const GURL& resource_url) {
 
 BraveContentSettingsAgentImpl::BraveContentSettingsAgentImpl(
     content::RenderFrame* render_frame,
-    bool should_whitelist,
     std::unique_ptr<Delegate> delegate)
     : ContentSettingsAgentImpl(render_frame,
-                               should_whitelist,
                                std::move(delegate)) {
   render_frame->GetAssociatedInterfaceRegistry()
       ->AddInterface<brave_shields::mojom::BraveShields>(base::BindRepeating(
@@ -431,6 +430,40 @@ BraveContentSettingsAgentImpl::GetOrCreateBraveShieldsRemote() {
 
   DCHECK(brave_shields_remote_.is_bound());
   return brave_shields_remote_;
+}
+
+bool BraveContentSettingsAgentImpl::IsAllowlistedForContentSettings(
+    const blink::WebSecurityOrigin& origin,
+    const blink::WebURL& document_url) const {
+  if (document_url.GetString() == content::kUnreachableWebDataURL) {
+    return true;
+  }
+
+  if (origin.IsNull() || origin.IsOpaque()) {
+    return false;  // Uninitialized document?
+  }
+
+  blink::WebString protocol = origin.Protocol();
+
+  if (protocol == content::kChromeUIScheme) {
+    return true;  // Browser UI elements should still work.
+  }
+
+  if (protocol == content::kChromeDevToolsScheme) {
+    return true;  // DevTools UI elements should still work.
+  }
+
+  if (delegate_->IsSchemeAllowlisted(protocol.Utf8())) {
+    return true;
+  }
+
+  // If the scheme is file:, an empty file name indicates a directory listing,
+  // which requires JavaScript to function properly.
+  if (protocol == url::kFileScheme &&
+      document_url.ProtocolIs(url::kFileScheme)) {
+    return GURL(document_url).ExtractFileName().empty();
+  }
+  return false;
 }
 
 }  // namespace content_settings
