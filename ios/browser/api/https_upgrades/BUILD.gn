@@ -3,19 +3,22 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this file,
 # You can obtain one at https://mozilla.org/MPL/2.0/.
 
-source_set("https_upgrade_exceptions") {
+source_set("https_upgrades") {
   sources = [
-    "https_upgrade_exceptions_service+private.h",
-    "https_upgrade_exceptions_service.h",
-    "https_upgrade_exceptions_service.mm",
+    "https_upgrade_service+private.h",
+    "https_upgrade_service.h",
+    "https_upgrade_service.mm",
+    "https_upgrade_service_factory.h",
+    "https_upgrade_service_factory.mm",
   ]
   deps = [
     "//base",
-    "//brave/components/https_upgrade_exceptions/browser",
-    "//brave/ios/browser/application_context",
+    "//brave/ios/browser/keyed_service",
+    "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/components/security_interstitials/https_only_mode",
     "//net",
-    "//url",
   ]
   frameworks = [ "Foundation.framework" ]
 }

@@ -130,7 +130,10 @@ import os
     var clearableSettings = [
       ClearableSetting(
         id: .history,
-        clearable: HistoryClearable(historyAPI: braveCore.historyAPI),
+        clearable: HistoryClearable(
+          historyAPI: braveCore.historyAPI,
+          httpsUpgradeService: HttpsUpgradeServiceFactory.get(privateMode: false)
+        ),
         isEnabled: true
       ),
       ClearableSetting(id: .cache, clearable: CacheClearable(), isEnabled: true),
