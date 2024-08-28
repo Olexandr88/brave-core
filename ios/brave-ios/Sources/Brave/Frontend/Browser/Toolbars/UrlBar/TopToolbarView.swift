@@ -56,6 +56,7 @@ class TopToolbarView: UIView, ToolbarProtocol {
   enum URLBarButton {
     case wallet
     case playlist
+    case translate
   }
 
   // MARK: Internal
@@ -208,6 +209,7 @@ class TopToolbarView: UIView, ToolbarProtocol {
     didSet {
       locationView.walletButton.isHidden = currentURLBarButton != .wallet
       locationView.playlistButton.isHidden = currentURLBarButton != .playlist
+      locationView.translateButton.isHidden = currentURLBarButton != .translate
     }
   }
 
@@ -618,6 +620,11 @@ class TopToolbarView: UIView, ToolbarProtocol {
     updateURLBarButtonsVisibility()
   }
 
+  func updateTranslateButtonState(_ state: TranslateURLBarButton.TranslateState) {
+    locationView.translateButton.translateState = state
+    updateURLBarButtonsVisibility()
+  }
+
   func updateWalletButtonState(_ state: WalletURLBarButton.ButtonState) {
     locationView.walletButton.buttonState = state
     updateURLBarButtonsVisibility()
@@ -629,6 +636,8 @@ class TopToolbarView: UIView, ToolbarProtocol {
       currentURLBarButton = .wallet
     } else if locationView.playlistButton.buttonState != .none {
       currentURLBarButton = .playlist
+    } else if locationView.translateButton.translateState != .unavailable {
+      currentURLBarButton = .translate
     } else {
       currentURLBarButton = nil
     }
@@ -890,7 +899,7 @@ extension TopToolbarView: TabLocationViewDelegate {
   ) {
     delegate?.topToolbarDidPressPlaylistMenuAction(self, action: action)
   }
-  
+
   func tabLocationViewDidTapTranslateButton(_ tabLocationView: TabLocationView) {
     delegate?.topToolbarDidPressTranslateButton(self)
   }
