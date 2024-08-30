@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/ui/views/location_bar/location_bar_view.cc b/chrome/browser/ui/views/location_bar/location_bar_view.cc
-index 61d32b558b7c49fa69989219b660bf2adf8fb90c..238b7d421119e21b15e95a86c789f5a2fed209c2 100644
+index 61d32b558b7c49fa69989219b660bf2adf8fb90c..25f77e4d8bf906b786f4da5efe91b6c1c3c8cac6 100644
 --- a/chrome/browser/ui/views/location_bar/location_bar_view.cc
 +++ b/chrome/browser/ui/views/location_bar/location_bar_view.cc
 @@ -715,6 +715,7 @@ void LocationBarView::Layout(PassKey) {
@@ -10,7 +10,15 @@ index 61d32b558b7c49fa69989219b660bf2adf8fb90c..238b7d421119e21b15e95a86c789f5a2
    if (should_indent) {
      icon_left += icon_indent;
      text_left += text_indent;
-@@ -802,6 +803,7 @@ void LocationBarView::Layout(PassKey) {
+@@ -778,6 +779,7 @@ void LocationBarView::Layout(PassKey) {
+       }
+       selected_keyword_view_->SetCustomImage(image);
+     }
++  BRAVE_LAYOUT_HANDLE_SEARCH_PROMOTION_BUTTON_VISIBILITY
+   } else if (location_icon_view_->GetShowText() &&
+              !ShouldChipOverrideLocationIcon()) {
+     location_icon_view_->SetVisible(true);
+@@ -802,6 +804,7 @@ void LocationBarView::Layout(PassKey) {
      }
    };
  
@@ -18,7 +26,7 @@ index 61d32b558b7c49fa69989219b660bf2adf8fb90c..238b7d421119e21b15e95a86c789f5a2
    add_trailing_decoration(page_action_icon_container_,
                            /*intra_item_padding=*/0);
    for (ContentSettingImageView* view : base::Reversed(content_setting_views_)) {
-@@ -815,6 +817,7 @@ void LocationBarView::Layout(PassKey) {
+@@ -815,6 +818,7 @@ void LocationBarView::Layout(PassKey) {
    }
  
    add_trailing_decoration(clear_all_button_, /*intra_item_padding=*/0);

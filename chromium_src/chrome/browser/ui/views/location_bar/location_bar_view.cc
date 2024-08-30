@@ -36,6 +36,15 @@
     add_trailing_decoration(item, /*intra_item_padding=*/0);    \
   }
 
+#define BRAVE_LAYOUT_HANDLE_SEARCH_PROMOTION_BUTTON_VISIBILITY              \
+  }                                                                         \
+  else if (GetSearchPromotionButton() &&                                    \
+           GetSearchPromotionButton()->GetVisible()) {                      \
+    leading_decorations.AddDecoration(vertical_padding, location_height,    \
+                                      false, kLeadingDecorationMaxFraction, \
+                                      /*intra_item_padding=*/0, 0,          \
+                                      GetSearchPromotionButton());
+
 #define OmniboxViewViews BraveOmniboxViewViews
 #define ChromeOmniboxClient BraveOmniboxClientImpl
 #define PageActionIconContainerView BravePageActionIconContainerView
@@ -52,9 +61,14 @@
 #undef PageActionIconContainerView
 #undef ChromeOmniboxClient
 #undef OmniboxViewViews
+#undef BRAVE_LAYOUT_HANDLE_SEARCH_PROMOTION_BUTTON_VISIBILITY
 #undef BRAVE_LAYOUT_LEFT_MOST_TRAILING_DECORATIONS
 #undef BRAVE_LAYOUT_RIGHT_MOST_TRAILING_DECORATIONS
 #undef BRAVE_LAYOUT_LEADING_DECORATIONS
+
+views::View* LocationBarView::GetSearchPromotionButton() const {
+  return nullptr;
+}
 
 std::vector<views::View*> LocationBarView::GetRightMostTrailingViews() {
   return std::vector<views::View*>();
