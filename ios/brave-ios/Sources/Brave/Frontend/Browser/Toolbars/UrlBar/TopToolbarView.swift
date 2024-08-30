@@ -127,7 +127,8 @@ class TopToolbarView: UIView, ToolbarProtocol {
     privateBrowsingManager: privateBrowsingManager
   ).then {
     $0.translatesAutoresizingMaskIntoConstraints = false
-    $0.readerModeState = ReaderModeState.unavailable
+    $0.readerModeState = .unavailable
+    $0.translationState = .unavailable
     $0.delegate = self
     $0.layer.cornerRadius = UX.textFieldCornerRadius
     $0.layer.cornerCurve = .continuous
@@ -209,7 +210,6 @@ class TopToolbarView: UIView, ToolbarProtocol {
     didSet {
       locationView.walletButton.isHidden = currentURLBarButton != .wallet
       locationView.playlistButton.isHidden = currentURLBarButton != .playlist
-      locationView.translateButton.isHidden = currentURLBarButton != .translate
     }
   }
 
@@ -621,7 +621,7 @@ class TopToolbarView: UIView, ToolbarProtocol {
   }
 
   func updateTranslateButtonState(_ state: TranslateURLBarButton.TranslateState) {
-    locationView.translateButton.translateState = state
+    locationView.translationState = state
     updateURLBarButtonsVisibility()
   }
 
@@ -636,8 +636,6 @@ class TopToolbarView: UIView, ToolbarProtocol {
       currentURLBarButton = .wallet
     } else if locationView.playlistButton.buttonState != .none {
       currentURLBarButton = .playlist
-    } else if locationView.translateButton.translateState != .unavailable {
-      currentURLBarButton = .translate
     } else {
       currentURLBarButton = nil
     }
