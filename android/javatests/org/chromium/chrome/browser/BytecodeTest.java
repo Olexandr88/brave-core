@@ -804,6 +804,15 @@ public class BytecodeTest {
                         true,
                         int.class,
                         Context.class));
+        Assert.assertTrue(
+                methodExists(
+                        "org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarController",
+                        "showUndoBar",
+                        MethodModifier.REGULAR,
+                        true,
+                        void.class,
+                        List.class,
+                        boolean.class));
     }
 
     @Test
