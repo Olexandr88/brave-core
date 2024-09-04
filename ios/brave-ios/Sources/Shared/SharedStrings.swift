@@ -337,3 +337,13 @@ extension Strings {
     comment: "Question shown to user when tapping a link that opens the App Store app"
   )
 }
+
+// Search result ad clicked InfoBar title
+extension Strings {
+  public static let searchResultAdsClickedInfoBarTitle = NSLocalizedString(
+    "SearchResultAdsClickedInfoBarTitle",
+    bundle: .module,
+    value: "You’ve just clicked on a Brave Search ad. Unlike Big Tech, we measure ad performance anonymously and preserve your privacy.",
+    comment: "InfoBar displayed after a user clicked a search result ad for the first time."
+  )
+}
