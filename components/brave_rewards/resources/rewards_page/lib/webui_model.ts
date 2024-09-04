@@ -214,8 +214,10 @@ export function createModel(): AppModel {
         banner: {
           title: publisherBanner?.title || '',
           description: publisherBanner?.description || '',
-          background: publisherBanner?.background || ''
-        }
+          background: publisherBanner?.background || '',
+          web3URL: publisherBanner?.web3Url || ''
+        },
+        supportedWalletProviders: []
       }
     })
   }
@@ -436,6 +438,10 @@ export function createModel(): AppModel {
     async removeRecurringContribution(id) {
       await pageHandler.removeRecurringContribution(id)
       updateRecurringContributions()
+    },
+
+    async sendContribution(creatorID, amount, recurring) {
+      return false
     }
   }
 }

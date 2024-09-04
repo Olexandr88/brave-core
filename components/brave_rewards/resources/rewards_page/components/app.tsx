@@ -17,6 +17,7 @@ import { Onboarding } from './onboarding/onboarding'
 import { OnboardingSuccessModal } from './onboarding/onboarding_success_modal'
 import { ConnectAccount } from './connect_account'
 import { AuthorizationModal } from './authorization_modal'
+import { ContributeModal } from './contribute/contribute_modal'
 import { ResetModal } from './reset_modal'
 import * as routes from '../lib/app_routes'
 
@@ -38,6 +39,7 @@ export function App() {
   React.useEffect(() => { model.onAppRendered() }, [model, openTime])
 
   const [showResetModal, setShowResetModal] = React.useState(false)
+  const [showContributeModal, setShowContributeModal] = React.useState(false)
   const [showOnboardingSuccess, setShowOnboardingSuccess]
     = React.useState(false)
 
@@ -50,8 +52,13 @@ export function App() {
 
   React.useEffect(() => {
     return eventHub.addListener('open-modal', (data) => {
-      if (data === 'reset') {
-        setShowResetModal(true)
+      switch (data) {
+        case 'reset':
+          setShowResetModal(true)
+          break
+        case 'contribute':
+          setShowContributeModal(true)
+          break
       }
     })
   }, [eventHub])
@@ -92,8 +99,11 @@ export function App() {
     }
 
     if (showOnboardingSuccess) {
-      const onClose = () => setShowOnboardingSuccess(false)
-      return <OnboardingSuccessModal onClose={onClose} />
+      return (
+        <OnboardingSuccessModal
+          onClose={() => setShowOnboardingSuccess(false)}
+        />
+      )
     }
 
     if (showResetModal) {
@@ -101,10 +111,16 @@ export function App() {
         model.resetRewards()
         setShowResetModal(false)
       }
-      const onClose = () => {
-        setShowResetModal(false)
-      }
-      return <ResetModal onReset={onReset} onClose={onClose} />
+      return (
+        <ResetModal
+          onReset={onReset}
+          onClose={() => setShowResetModal(false)}
+        />
+      )
+    }
+
+    if (showContributeModal) {
+      return <ContributeModal onClose={() => setShowContributeModal(false)} />
     }
 
     return null
@@ -131,8 +147,11 @@ export function App() {
     }
 
     if (!paymentId) {
-      const showOnboardingCompleted = () => setShowOnboardingSuccess(true)
-      return <Onboarding onOnboardingCompleted={showOnboardingCompleted} />
+      return (
+        <Onboarding
+          onOnboardingCompleted={() => setShowOnboardingSuccess(true)}
+        />
+      )
     }
 
     if (route === routes.connectAccount) {

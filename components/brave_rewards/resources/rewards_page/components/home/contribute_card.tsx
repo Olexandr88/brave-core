@@ -9,6 +9,7 @@ import Icon from '@brave/leo/react/icon'
 
 import { useAppState } from '../../lib/app_model_context'
 import { useLocaleContext } from '../../lib/locale_strings'
+import { EventHubContext } from '../../lib/event_hub'
 import { NewTabLink } from '../../../shared/components/new_tab_link'
 import { getCreatorIconSrc, getCreatorPlatformIcon } from '../../lib/creator_icon'
 
@@ -16,6 +17,7 @@ import { style } from './contribute_card.style'
 
 export function ContributeCard() {
   const { getString } = useLocaleContext()
+  const eventHub = React.useContext(EventHubContext)
   const [creator, externalWallet] = useAppState((state) => [
     state.currentCreator,
     state.externalWallet
@@ -26,6 +28,13 @@ export function ContributeCard() {
   }
 
   const { site, banner } = creator
+
+  function getName() {
+    if (site.platform) {
+      return site.name
+    }
+    return banner.title || site.name
+  }
 
   function renderOrigin() {
     if (site.platform) {
@@ -43,14 +52,17 @@ export function ContributeCard() {
         </NewTabLink>
         <NewTabLink href={site.url} className='text'>
           <span className='name'>
-            <span>{banner.title || site.name}</span>
+            <span>{getName()}</span>
             <Icon name='verification-filled-color' />
           </span>
           <span className='origin'>
             {renderOrigin()}
           </span>
         </NewTabLink>
-        <Button kind={externalWallet ? 'filled' : 'outline'}>
+        <Button
+          kind={externalWallet ? 'filled' : 'outline'}
+          onClick={() => eventHub.dispatch('open-modal', 'contribute')}
+        >
           {getString('contributeButtonLabel')}
         </Button>
       </section>

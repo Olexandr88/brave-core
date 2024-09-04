@@ -27,7 +27,7 @@ import { css, scopedCSS } from '../../lib/scoped_css'
 
     .icon {
       --leo-icon-size: 28px;
-      --leo-icon-color: ${color.container.background};
+      --leo-icon-color: ${color.white};
 
       width: 48px;
       height: 48px;
@@ -36,7 +36,7 @@ import { css, scopedCSS } from '../../lib/scoped_css'
         radial-gradient(farthest-corner at center 10px,
                         rgba(255, 255, 255, 0.30) 0%,
                         rgba(255, 255, 255, 0.00) 100%),
-        ${color.neutral[70]};
+        rgba(0, 0, 0, .94);
       display: flex;
       align-items: center;
       justify-content: center;
