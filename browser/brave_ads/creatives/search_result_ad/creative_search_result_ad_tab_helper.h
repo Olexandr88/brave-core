@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 
 class GURL;
+class PrefService;
 
 namespace brave_ads {
 
@@ -39,12 +40,18 @@ class CreativeSearchResultAdTabHelper
 
   bool ShouldHandleCreativeAdEvents() const;
 
-  void MaybeTriggerCreativeAdClickedEvent(const GURL& url);
+  void MaybeTriggerCreativeAdClickedEvent(
+      const GURL& url,
+      base::OnceCallback<void(bool success)> callback);
 
  private:
   friend class content::WebContentsUserData<CreativeSearchResultAdTabHelper>;
 
   AdsService* GetAdsService() const;
+
+  PrefService* GetPrefs() const;
+
+  void MaybeTriggerCreativeAdClickedEventCallback(bool success);
 
   void MaybeCreateCreativeSearchResultAdHandler(
       content::NavigationHandle* navigation_handle);

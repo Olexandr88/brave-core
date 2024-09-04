@@ -149,16 +149,24 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
           ::testing::_))
       .Times(0);
 
-  EXPECT_CALL(ads_service_mock_,
-              TriggerSearchResultAdEvent(
-                  ::testing::_, mojom::SearchResultAdEventType::kClicked,
-                  ::testing::_));
+  EXPECT_CALL(
+      ads_service_mock_,
+      TriggerSearchResultAdEvent(
+          ::testing::_, mojom::SearchResultAdEventType::kClicked, ::testing::_))
+      .WillOnce([](mojom::CreativeSearchResultAdInfoPtr,
+                   mojom::SearchResultAdEventType,
+                   TriggerAdEventCallback callback) {
+        std::move(callback).Run(/*success=*/false);
+      });
 
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(), std::move(mojom_web_page));
 
+  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  EXPECT_CALL(callback, Run(/*success=*/false));
+
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      ClickRedirectUrl());
+      ClickRedirectUrl(), callback.Get());
 }
 
 TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
@@ -187,8 +195,11 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(), blink::mojom::WebPagePtr());
 
+  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
+
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      ClickRedirectUrl());
+      ClickRedirectUrl(), callback.Get());
 }
 
 TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
@@ -217,8 +228,11 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(), blink::mojom::WebPage::New());
 
+  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
+
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      ClickRedirectUrl());
+      ClickRedirectUrl(), callback.Get());
 }
 
 TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
@@ -249,8 +263,11 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
       test::CreativeSearchResultAdMojomWebPage(
           /*excluded_property_names=*/{kCreativeAdRewardsValuePropertyName}));
 
+  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
+
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      ClickRedirectUrl());
+      ClickRedirectUrl(), callback.Get());
 }
 
 TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
@@ -274,10 +291,15 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
         EXPECT_FALSE(mojom_creative_ad->creative_set_conversion);
       });
 
-  EXPECT_CALL(ads_service_mock_,
-              TriggerSearchResultAdEvent(
-                  ::testing::_, mojom::SearchResultAdEventType::kClicked,
-                  ::testing::_));
+  EXPECT_CALL(
+      ads_service_mock_,
+      TriggerSearchResultAdEvent(
+          ::testing::_, mojom::SearchResultAdEventType::kClicked, ::testing::_))
+      .WillOnce([](mojom::CreativeSearchResultAdInfoPtr /*mojom_creative_ad*/,
+                   mojom::SearchResultAdEventType /*event_type*/,
+                   TriggerAdEventCallback callback) {
+        std::move(callback).Run(/*success=*/false);
+      });
 
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(),
@@ -285,8 +307,11 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
           /*excluded_property_names=*/{
               kCreativeSetConversionUrlPatternPropertyName}));
 
+  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  EXPECT_CALL(callback, Run(/*success=*/false));
+
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      ClickRedirectUrl());
+      ClickRedirectUrl(), callback.Get());
 }
 
 TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
@@ -322,16 +347,18 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
                   mojom_creative_ad);
       });
 
+  int clicked_events_count = 0;
+
   EXPECT_CALL(
       ads_service_mock_,
       TriggerSearchResultAdEvent(
           ::testing::_, mojom::SearchResultAdEventType::kClicked, ::testing::_))
       .Times(2)
       .WillRepeatedly(
-          [&mojom_web_page](
+          [&mojom_web_page, &clicked_events_count](
               mojom::CreativeSearchResultAdInfoPtr mojom_creative_ad,
               mojom::SearchResultAdEventType /*mojom_ad_event_type*/,
-              TriggerAdEventCallback /*callback*/) {
+              TriggerAdEventCallback callback) {
             const CreativeSearchResultAdMap creative_search_result_ads =
                 ExtractCreativeSearchResultAdsFromMojomWebPageEntities(
                     mojom_web_page->entities);
@@ -341,16 +368,31 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
             EXPECT_EQ(
                 creative_search_result_ads.at(test::kCreativeAdPlacementId),
                 mojom_creative_ad);
+
+            ++clicked_events_count;
+            if (clicked_events_count == 1) {
+              std::move(callback).Run(/*success=*/true);
+            } else {
+              std::move(callback).Run(/*success=*/false);
+            }
           });
 
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(), mojom_web_page->Clone());
 
-  creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      ClickRedirectUrl());
+  base::MockCallback<base::OnceCallback<void(bool success)>>
+      fist_click_callback;
+  EXPECT_CALL(fist_click_callback, Run(/*success=*/true));
 
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      ClickRedirectUrl());
+      ClickRedirectUrl(), fist_click_callback.Get());
+
+  base::MockCallback<base::OnceCallback<void(bool success)>>
+      second_click_callback;
+  EXPECT_CALL(second_click_callback, Run(/*success=*/false));
+
+  creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
+      ClickRedirectUrl(), second_click_callback.Get());
 }
 
 TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
@@ -379,14 +421,30 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
       creative_search_result_ad_handler.get(),
       test::CreativeSearchResultAdMojomWebPage(/*excluded_property_names=*/{}));
 
-  creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      InvalidClickRedirectUrlWithNoQueryValue());
+  {
+    base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+    EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
 
-  creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      InvalidClickRedirectUrlWithMismatchingQueryNameAndValue());
+    creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
+        InvalidClickRedirectUrlWithNoQueryValue(), callback.Get());
+  }
 
-  creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      InvalidClickRedirectUrlWithNoQueryNameOrValue());
+  {
+    base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+    EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
+
+    creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
+        InvalidClickRedirectUrlWithMismatchingQueryNameAndValue(),
+        callback.Get());
+  }
+
+  {
+    base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+    EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
+
+    creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
+        InvalidClickRedirectUrlWithNoQueryNameOrValue(), callback.Get());
+  }
 }
 
 TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
@@ -433,7 +491,7 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
       .WillOnce([&mojom_web_page](
                     mojom::CreativeSearchResultAdInfoPtr mojom_creative_ad,
                     mojom::SearchResultAdEventType /*mojom_ad_event_type*/,
-                    TriggerAdEventCallback /*callback*/) {
+                    TriggerAdEventCallback callback) {
         const CreativeSearchResultAdMap creative_search_result_ads =
             ExtractCreativeSearchResultAdsFromMojomWebPageEntities(
                 mojom_web_page->entities);
@@ -444,13 +502,18 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
             creative_search_result_ads.at(
                 test::kEscapedCreativeAdPlacementIdWithUnreservedCharacters),
             mojom_creative_ad);
+
+        std::move(callback).Run(/*success=*/true);
       });
 
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(), mojom_web_page->Clone());
 
+  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  EXPECT_CALL(callback, Run(/*success=*/true));
+
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
-      ClickRedirectUrlWithUnreservedCharactersInPlacementId());
+      ClickRedirectUrlWithUnreservedCharactersInPlacementId(), callback.Get());
 }
 
 }  // namespace brave_ads

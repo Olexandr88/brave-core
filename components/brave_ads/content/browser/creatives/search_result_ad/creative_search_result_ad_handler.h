@@ -53,7 +53,9 @@ class CreativeSearchResultAdHandler final {
       ExtractCreativeAdPlacementIdsFromWebPageCallback callback);
 
   void MaybeTriggerCreativeAdViewedEvent(const std::string& placement_id);
-  void MaybeTriggerCreativeAdClickedEvent(const GURL& url);
+  void MaybeTriggerCreativeAdClickedEvent(
+      const GURL& url,
+      base::OnceCallback<void(bool success)> callback);
 
  private:
   friend class BraveAdsCreativeSearchResultAdHandlerTest;
