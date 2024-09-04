@@ -78,7 +78,7 @@ void CreativeSearchResultAdHandler::
 
 void CreativeSearchResultAdHandler::MaybeTriggerCreativeAdClickedEvent(
     const GURL& url,
-    base::OnceCallback<void(bool success)> callback) {
+    TriggerAdEventCallback callback) {
   if (!creative_search_result_ads_) {
     // No creative search result ads are present on the web page.
     return;

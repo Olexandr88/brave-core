@@ -36,17 +36,16 @@ void CreativeSearchResultAdClickedInfoBarDelegate::Create(
   CHECK(web_contents);
   CHECK(prefs);
 
-  infobars::ContentInfoBarManager* infobar_manager =
-      infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  if (!infobar_manager) {
-    return;
-  }
-
   if (!prefs->GetBoolean(prefs::kShouldShowSearchResultAdClickedInfoBar)) {
     return;
   }
   prefs->SetBoolean(prefs::kShouldShowSearchResultAdClickedInfoBar, false);
 
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (!infobar_manager) {
+    return;
+  }
   infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new CreativeSearchResultAdClickedInfoBarDelegate())));
@@ -85,6 +84,13 @@ std::u16string CreativeSearchResultAdClickedInfoBarDelegate::GetLinkText()
 
 GURL CreativeSearchResultAdClickedInfoBarDelegate::GetLinkURL() const {
   return GURL(kLearnMoreUrl);
+}
+
+bool CreativeSearchResultAdClickedInfoBarDelegate::LinkClicked(
+    WindowOpenDisposition disposition) {
+  ConfirmInfoBarDelegate::LinkClicked(disposition);
+  // Return true to immediately close the infobar.
+  return true;
 }
 
 }  // namespace brave_ads

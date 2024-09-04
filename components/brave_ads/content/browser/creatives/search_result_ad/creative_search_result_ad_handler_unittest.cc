@@ -18,6 +18,7 @@
 #include "brave/components/brave_ads/content/browser/creatives/search_result_ad/creative_search_result_ad_mojom_web_page_entities_test_util.h"
 #include "brave/components/brave_ads/content/browser/creatives/search_result_ad/creative_search_result_ad_test_constants.h"
 #include "brave/components/brave_ads/core/mojom/brave_ads.mojom.h"
+#include "brave/components/brave_ads/core/public/ads_callback.h"
 #include "brave/components/brave_ads/core/public/ads_feature.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -162,7 +163,7 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(), std::move(mojom_web_page));
 
-  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  base::MockCallback<TriggerAdEventCallback> callback;
   EXPECT_CALL(callback, Run(/*success=*/false));
 
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
@@ -195,7 +196,7 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(), blink::mojom::WebPagePtr());
 
-  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  base::MockCallback<TriggerAdEventCallback> callback;
   EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
 
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
@@ -228,7 +229,7 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(), blink::mojom::WebPage::New());
 
-  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  base::MockCallback<TriggerAdEventCallback> callback;
   EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
 
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
@@ -263,7 +264,7 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
       test::CreativeSearchResultAdMojomWebPage(
           /*excluded_property_names=*/{kCreativeAdRewardsValuePropertyName}));
 
-  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  base::MockCallback<TriggerAdEventCallback> callback;
   EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
 
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
@@ -307,7 +308,7 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
           /*excluded_property_names=*/{
               kCreativeSetConversionUrlPatternPropertyName}));
 
-  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  base::MockCallback<TriggerAdEventCallback> callback;
   EXPECT_CALL(callback, Run(/*success=*/false));
 
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
@@ -380,15 +381,13 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(), mojom_web_page->Clone());
 
-  base::MockCallback<base::OnceCallback<void(bool success)>>
-      fist_click_callback;
+  base::MockCallback<TriggerAdEventCallback> fist_click_callback;
   EXPECT_CALL(fist_click_callback, Run(/*success=*/true));
 
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
       ClickRedirectUrl(), fist_click_callback.Get());
 
-  base::MockCallback<base::OnceCallback<void(bool success)>>
-      second_click_callback;
+  base::MockCallback<TriggerAdEventCallback> second_click_callback;
   EXPECT_CALL(second_click_callback, Run(/*success=*/false));
 
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
@@ -422,7 +421,7 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
       test::CreativeSearchResultAdMojomWebPage(/*excluded_property_names=*/{}));
 
   {
-    base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+    base::MockCallback<TriggerAdEventCallback> callback;
     EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
 
     creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
@@ -430,7 +429,7 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
   }
 
   {
-    base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+    base::MockCallback<TriggerAdEventCallback> callback;
     EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
 
     creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
@@ -439,7 +438,7 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
   }
 
   {
-    base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+    base::MockCallback<TriggerAdEventCallback> callback;
     EXPECT_CALL(callback, Run(/*success=*/::testing::_)).Times(0);
 
     creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(
@@ -509,7 +508,7 @@ TEST_F(BraveAdsCreativeSearchResultAdHandlerTest,
   SimulateMaybeExtractCreativeAdPlacementIdsFromWebPageCallback(
       creative_search_result_ad_handler.get(), mojom_web_page->Clone());
 
-  base::MockCallback<base::OnceCallback<void(bool success)>> callback;
+  base::MockCallback<TriggerAdEventCallback> callback;
   EXPECT_CALL(callback, Run(/*success=*/true));
 
   creative_search_result_ad_handler->MaybeTriggerCreativeAdClickedEvent(

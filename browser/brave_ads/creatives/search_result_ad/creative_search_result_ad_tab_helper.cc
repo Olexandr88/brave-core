@@ -100,7 +100,7 @@ bool CreativeSearchResultAdTabHelper::ShouldHandleCreativeAdEvents() const {
 
 void CreativeSearchResultAdTabHelper::MaybeTriggerCreativeAdClickedEvent(
     const GURL& url,
-    base::OnceCallback<void(bool success)> callback) {
+    TriggerAdEventCallback callback) {
   if (creative_search_result_ad_handler_) {
     creative_search_result_ad_handler_->MaybeTriggerCreativeAdClickedEvent(
         url, std::move(callback));

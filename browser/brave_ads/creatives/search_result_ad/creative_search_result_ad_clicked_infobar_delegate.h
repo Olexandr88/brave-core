@@ -37,6 +37,7 @@ class CreativeSearchResultAdClickedInfoBarDelegate
   int GetButtons() const override;
   std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;
+  bool LinkClicked(WindowOpenDisposition disposition) override;
 };
 
 }  // namespace brave_ads

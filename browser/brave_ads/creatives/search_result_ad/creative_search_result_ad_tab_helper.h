@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "brave/components/brave_ads/core/public/ads_callback.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -40,9 +41,8 @@ class CreativeSearchResultAdTabHelper
 
   bool ShouldHandleCreativeAdEvents() const;
 
-  void MaybeTriggerCreativeAdClickedEvent(
-      const GURL& url,
-      base::OnceCallback<void(bool success)> callback);
+  void MaybeTriggerCreativeAdClickedEvent(const GURL& url,
+                                          TriggerAdEventCallback callback);
 
  private:
   friend class content::WebContentsUserData<CreativeSearchResultAdTabHelper>;
