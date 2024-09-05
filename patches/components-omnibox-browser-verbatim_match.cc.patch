@@ -1,0 +1,12 @@
+diff --git a/components/omnibox/browser/verbatim_match.cc b/components/omnibox/browser/verbatim_match.cc
+index 97d35d22d4c81e18ae37bca3bb400d5b15f526ac..49509bab2198e5515126db94ca396ab5def385b6 100644
+--- a/components/omnibox/browser/verbatim_match.cc
++++ b/components/omnibox/browser/verbatim_match.cc
+@@ -12,7 +12,6 @@
+ #include "components/omnibox/browser/autocomplete_provider_client.h"
+ #include "components/omnibox/browser/in_memory_url_index_types.h"
+ #include "components/search_engines/template_url_service.h"
+-#include "content/public/common/url_constants.h"
+ #include "third_party/metrics_proto/omnibox_scoring_signals.pb.h"
+ #include "url/gurl.h"
+ #include "url/url_constants.h"
