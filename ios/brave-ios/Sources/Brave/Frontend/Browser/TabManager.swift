@@ -9,6 +9,7 @@ import Data
 import Favicon
 import Foundation
 import Growth
+import IsTesting
 import Preferences
 import Shared
 import Storage
@@ -97,6 +98,8 @@ class TabManager: NSObject {
   private var metricsHeartbeat: Timer?
   private let historyAPI: BraveHistoryAPI?
   private let browserPrefs: BrowserPrefs?
+  private let defaultWebViewConfiguration: CWVWebViewConfiguration?
+  private let privateWebViewConfiguration: () -> CWVWebViewConfiguration?
   public let privateBrowsingManager: PrivateBrowsingManager
   private var forgetTasks: [TabType: [String: Task<Void, Error>]] = [:]
 
@@ -118,9 +121,7 @@ class TabManager: NSObject {
     windowId: UUID,
     prefs: Prefs,
     rewards: BraveRewards?,
-    tabGeneratorAPI: BraveTabGeneratorAPI?,
-    historyAPI: BraveHistoryAPI?,
-    browserPrefs: BrowserPrefs?,
+    braveCore: BraveCoreMain?,
     privateBrowsingManager: PrivateBrowsingManager
   ) {
     assert(Thread.isMainThread)
@@ -129,10 +130,14 @@ class TabManager: NSObject {
     self.prefs = prefs
     self.navDelegate = TabManagerNavDelegate()
     self.rewards = rewards
-    self.tabGeneratorAPI = tabGeneratorAPI
-    self.historyAPI = historyAPI
-    self.browserPrefs = browserPrefs
+    self.tabGeneratorAPI = braveCore?.tabGeneratorAPI
+    self.historyAPI = braveCore?.historyAPI
+    self.browserPrefs = braveCore?.browserPrefs
     self.privateBrowsingManager = privateBrowsingManager
+    self.defaultWebViewConfiguration = braveCore?.defaultWebViewConfiguration
+    self.privateWebViewConfiguration = { [weak braveCore] in
+      braveCore?.nonPersistentWebViewConfiguration
+    }
     super.init()
 
     self.navDelegate.tabManager = self
@@ -553,9 +558,19 @@ class TabManager: NSObject {
 
     let tabId = id ?? UUID()
     let type: TabType = isPrivate ? .private : .regular
+    let webViewConfiguration: CWVWebViewConfiguration?
+    #if DEBUG
+    if isTesting {
+      webViewConfiguration = nil
+    } else {
+      webViewConfiguration = isPrivate ? privateWebViewConfiguration() : defaultWebViewConfiguration
+    }
+    #else
+    webViewConfiguration = isPrivate ? privateWebViewConfiguration() : defaultWebViewConfiguration
+    #endif
     let tab = Tab(
       wkConfiguration: configuration,
-      configuration: nil,
+      configuration: webViewConfiguration,
       id: tabId,
       type: type,
       tabGeneratorAPI: tabGeneratorAPI,
