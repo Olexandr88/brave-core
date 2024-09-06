@@ -1002,6 +1002,7 @@
 -ThemeProviderRedirectedEquivalenceTest.*
 -ThemeServiceTest.*
 -ThemeSyncableServiceTest.*
+-ThemeSyncableServiceWithMigrationFlag*.*
 -ToolbarActionsModelUnitTest.*
 -TranslateManagerRenderViewHostTest.*
 -TurnSyncOnHelperTest.*

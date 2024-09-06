@@ -41,6 +41,12 @@
 
 # Optimization Guide is disabled
 -ChromeRenderFrameObserverTest.OptGuideGetsText
+-DependencyParserModelLoaderBrowserTest.*
+-OptimizationGuideInternalsPageBrowserTest.*
+-OptimizationGuideKeyedServiceBrowserTest.*
+-OptimizationGuideKeyedServiceEnterpriseBrowserTest.*
+-UserAnnotationsServiceBrowserTest.*
+-UserAnnotationsServiceExplicitAllowlistBrowserTest.*
 -VisualQueryClassifierAgentTest.StartClassification_InvalidModel
 -VisualQueryClassifierAgentTest.StartClassification_NoImages
 -VisualQueryClassifierAgentTest.StartClassification_SingleImageNonShoppy
@@ -157,6 +163,7 @@
 -PersistentBackground/ContentScriptApiTestWithContextType.Messaging/0
 -PersistentBackground/DeclarativeContentApiTestWithContextType.RulesPersistence/0
 -PersistentBackground/ExtensionApiTabTestWithContextType.OnUpdated/0
+-PersistentBackground/ExtensionApiTabTestWithContextType.OnUpdatedDiscardedState/0
 -PersistentBackground/ExtensionWebRequestApiTestWithContextType.WebRequestBlocking/0
 -PersistentBackground/ExtensionWebRequestApiTestWithContextType.WebRequestRedirects
 -PersistentBackground/ExtensionWebRequestApiTestWithContextType.WebRequestRedirects/0 # Request id not the same
@@ -173,7 +180,7 @@
 -ServiceWorker/DeclarativeContentApiTestWithContextType.RulesPersistence/0
 -ServiceWorker/DeclarativeContentApiTestWithContextType.RulesPersistence/0
 -ServiceWorker/ExtensionApiTabTestWithContextType.OnUpdated/0
--ServiceWorker/ExtensionApiTabTestWithContextType.OnUpdated/0
+-ServiceWorker/ExtensionApiTabTestWithContextType.OnUpdatedDiscardedState/0
 -ServiceWorker/ExtensionWebRequestApiTestWithContextType.WebRequestRedirects/0
 -ServiceWorker/ExtensionWebRequestApiTestWithContextType.WebRequestRedirects/BackgroundResourceFetchDisabled
 -ServiceWorker/ExtensionWebRequestApiTestWithContextType.WebRequestRedirects/BackgroundResourceFetchEnabled
@@ -397,8 +404,7 @@
 -PrefetchProxyPrerenderBrowserTest.*
 -PrerenderAutofillTest.*
 -PrerenderBookmarkBarNavigationTest.PrerenderActivation
--PrerenderBookmarkBarOnHoverNavigationTest.PrerenderActivation
--PrerenderBookmarkBarOnHoverNavigationTest.PrerenderMouseExitedCancellationAndPrerenderActivation
+-PrerenderBookmarkBarOnHoverNavigationTest.Prerender*
 -PrerenderBookmarkBarOnPressedNavigationTest.PrerenderActivation
 -PrerenderBookmarkBarOnPressedNavigationTest.PrerenderNonHttps
 -PrerenderBookmarkBarOnPressedNavigationTestNoTestingConfig.PrerenderActivation
@@ -1113,7 +1119,7 @@
 -ModelExecutionEnterprisePolicyBrowserTest.EnableWithoutLogging
 -ModelExecutionInternalsPageBrowserTest.LoggedInInternalsPage
 -NewTabPageUtilBrowserTest.EnableDriveByToT
--NewTabPageUtilEnableFlagBrowserTest.EnableDriveByFlag
+-NewTabPageUtilEnableFlagBrowserTest.*
 -NewTabPageUtilDisableFlagBrowserTest.*
 -PageContentAnnotationsServiceBrowserTest.*
 -PageContentAnnotationsServiceNoHistoryTest.*
@@ -1569,6 +1575,7 @@
 -IsolatedWebAppCspBrowserTest.*
 -IsolatedWebAppDevToolsTest.ErrorPage
 -IsolatedWebAppDevToolsTest.IwaIdentifiedAsApp
+-IsolatedWebAppDevToolsTest.IwaWithCorrectTitle
 -IsolatedWebAppErrorPageTest.SetsCorrectMessageForErrorCode
 -IsolatedWebAppErrorPageTest.UsesWebAppErrorPage
 -IsolatedWebAppExtensionBrowserTest.*
@@ -2107,9 +2114,6 @@
 -OnDiskAppWithIncognitoProfile/NetworkContextConfigurationProxyOnStartBrowserTest.*
 -OnDiskAppWithIncognitoProfile/NetworkContextConfigurationProxySettingsBrowserTest.*
 -OnDiskAppWithIncognitoProfile/NetworkContextConfigurationReportingAndNelBrowserTest.*
--OptimizationGuideInternalsPageBrowserTest.*
--OptimizationGuideKeyedServiceBrowserTest.*
--OptimizationGuideKeyedServiceEnterpriseBrowserTest.*
 -OriginAgentClusterBrowserTest.*
 -OriginAgentClusterDisabledBrowserTest.*
 -OutOfProcessPPAPITest.HostResolverCrash_Basic
