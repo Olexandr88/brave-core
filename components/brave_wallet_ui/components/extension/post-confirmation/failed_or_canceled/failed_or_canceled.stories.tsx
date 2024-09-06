@@ -1,7 +1,7 @@
-// Copyright (c) 2022 The Brave Authors. All rights reserved.
+// Copyright (c) 2024 The Brave Authors. All rights reserved.
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this file,
-// you can obtain one at https://mozilla.org/MPL/2.0/.
+// You can obtain one at https://mozilla.org/MPL/2.0/.
 import * as React from 'react'
 
 // Types
@@ -20,13 +20,13 @@ import {
 import {
   WalletPanelStory //
 } from '../../../../stories/wrappers/wallet-panel-story-wrapper'
-import { TransactionComplete } from './complete'
+import { TransactionFailedOrCanceled } from './failed_or_canceled'
 
 // Styled Components
 import { LongWrapper } from '../../../../stories/style'
 import { PanelWrapper } from '../../../../panel/style'
 
-export const _TransactionComplete = {
+export const _TransactionFailedOrCanceled = {
   render: (args: StorybookTransactionArgs) => {
     // Props
     const { transactionType } = args
@@ -34,7 +34,7 @@ export const _TransactionComplete = {
     // Computed
     const transaction = getPostConfirmationStatusMockTransaction(
       transactionType,
-      BraveWallet.TransactionStatus.Confirmed
+      BraveWallet.TransactionStatus.Error
     )
 
     return (
@@ -44,10 +44,9 @@ export const _TransactionComplete = {
           height={650}
         >
           <LongWrapper padding='0px'>
-            <TransactionComplete
+            <TransactionFailedOrCanceled
               transaction={transaction}
               onClose={() => alert('Close panel screen clicked.')}
-              onClickViewInActivity={() => alert('View in activity clicked.')}
             />
           </LongWrapper>
         </PanelWrapper>
@@ -57,7 +56,7 @@ export const _TransactionComplete = {
 }
 
 export default {
-  component: TransactionComplete,
+  component: TransactionFailedOrCanceled,
   argTypes: {
     transactionType: {
       options: StorybookTransactionOptions,
