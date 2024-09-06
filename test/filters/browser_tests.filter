@@ -1329,7 +1329,6 @@
 -LensOverlayControllerBrowserTest.*
 -LensOverlayControllerBrowserFullscreenDisabled.*
 -LensOverlayControllerBrowserWithPixelsTest.*
--SidePanelCoordinatorLensOverlayTest.*
 
 # This test fails because we don't implement an accent color for titlebars or
 # tabs on Windows
