@@ -2678,11 +2678,6 @@ are declared in tools/grit/grit_rule.gni.
             &amp;Learn More
           </message>
         </if>  <!-- not use_titlecase -->
-        <if expr="is_win">
-          <message name="IDS_DOWNLOAD_MENU_ALWAYS_OPEN_PDF_IN_READER" desc="Download context menu: Always open PDFs using Adobe Reader">
-            Always open in Adobe Reader
-          </message>
-        </if>
         <message name="IDS_DOWNLOAD_MENU_DEEP_SCAN" desc="Download context menu: send file for deep scanning">
           Scan file
         </message>
@@ -5049,7 +5044,7 @@ are declared in tools/grit/grit_rule.gni.
         Open in Web Store
       </message>
 
-      <if expr="enable_extensions">
+      <if expr="enable_extensions_core">
         <message name="IDS_EXTENSION_PROMPT_WARNING_FULL_ACCESS" desc="Permission string for full access to the computer and all websites.">
           Read and change all your data on your computer and all websites
         </message>
@@ -6243,6 +6238,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA" desc="Longer explanation for section of extensions that can't access the current site's data">
         These extensions don't need to see and change information on this site.
       </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL" desc="Text of the label next to the site settings toggle button that allows extensions on site pointed by $1.">
+        Allow extensions on <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
+      </message>
       <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP" desc="Tooltip text for the site setting toggle button when is on.">
         Extensions allowed on this site
       </message>
@@ -6250,13 +6248,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Extensions are not allowed on this site
       </message>
        <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ACCESSIBLE_NAME" desc="Accessibility string for the site setting toggle button.">
-        Allow extensions on this site
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_ACCESSIBLE_NAME" desc="Accessibility string for the site setting toggle button when is on.">
-        Select to block all extensions on this site
-      </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_ACCESSIBLE_NAME" desc="Accessibility string for the site setting toggle button when is off.'">
-        Select to allow extensions on this site
+        Allow extensions
       </message>
       <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_RESTRICTED_ACCESS_TEXT" desc="Text of the message section when this site is restricted to all extensions.">
         No extensions need access to this site
@@ -7390,7 +7382,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_WHY_THIS_SUGGESTION" desc="The title of a menu entry and bubble that explains why this suggestion appears in the omnibox popup.">
         Why this suggestion?
       </message>
-      <message name="IDS_OMNIBOX_CLOSE_IPH_SUGGESTION" desc="The text displayed when hovering over the button to close the omnibox IPH suggestion." translateable="false">
+      <message name="IDS_OMNIBOX_CLOSE_IPH_SUGGESTION" desc="The text displayed when hovering over the button to close the omnibox IPH suggestion.">
         Close
       </message>
       <message name="IDS_OMNIBOX_THUMBS_UP_SUGGESTION" desc="The text displayed when hovering over the thumbs up button to provide feedback about an omnibox suggestion." translateable="false">
@@ -8246,6 +8238,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_DESCRIPTION_9" desc="Accessibility label describing a wallpaper search inspiration image.">
         A large wave engulfs the ocean, with a dark forest ashore.
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SEPARATOR" desc="Text/punctuation that separates strings in a list. For example, 'meadow, oil painting, intellectual, and yellow.'" meaning="List separator for strings.">
+         , '''
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_TOOLBAR_BUTTON_A11Y_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility label describing the functionality of the button that opens the toolbar customization section of Customize Brave.">
         Customize toolbar buttons
       </message>
@@ -8317,6 +8312,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_MORE_ACTIONS" desc="The tooltip and accessibility label for the 3 dot menu on a module.">
         More actions for <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph>
+      </message>
+      <message name="IDS_NTP_MODULE_HEADER_MORE_ACTIONS_MENU" desc="Text read to screen reader users when navigating to a module's more actions menu.">
+        More actions
       </message>
       <message name="IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT" desc="Text shown on the customize button of an NTP module.">
         Customize cards
@@ -8673,6 +8671,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_SIDE_PANEL_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel resize handle is focused.">
         Side Panel Resize Handle
       </message>
+      <message name="IDS_ACCNAME_SIDE_PANEL_CLOSE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel close button is focused.">
+        Close side panel
+      </message>
       <message name="IDS_SIDE_PANEL_RESIZE_ACCESSIBLE_ALERT" is_accessibility_with_no_ui="true" desc="Accessible alert text announced after a user has resized the side panel via keyboard. This message is for screen reader users.">
                <ph name="WINDOW_SIDE">$1<ex>left</ex></ph> window now <ph name="WINDOW_SIZE_PERCENT">$2<ex>60%</ex></ph> wide, <ph name="PANE_SIDE">$3<ex>right</ex></ph> pane now <ph name="PANE_SIZE_PERCENT">$4<ex>40%</ex></ph> wide.
       </message>
@@ -8769,6 +8770,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_SIDE_PANEL_LENS_OVERLAY_PINNABLE_FOLLOWUP_IPH_SCREENREADER" desc="The screen reader text of the IPH describing that the Lens Overlay panel has been pinned." is_accessibility_with_no_ui="true">
         Pinned! You can access Google Lens again from the new button on the toolbar
+      </message>
+      <message name="IDS_SIDE_PANEL_HEADER_MORE_INFO_BUTTON_TOOLTIP" desc="The tooltip for the side panel more info button.">
+        More info
       </message>
 
       <!-- Bookmarks strings -->
@@ -9051,6 +9055,21 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_READING_MODE_BLUE_COLOR_LABEL" desc="Combobox option for setting the color theme for the reading mode feature.">
         Blue
+      </message>
+      <message name="IDS_READING_MODE_VOICE_HIGHLIGHT" desc="Accessibility label for button that opens a dropdown with options for changing the highlight granularity for following along with speech in Read Aloud.">
+        Voice highlight
+      </message>
+      <message name="IDS_READING_MODE_AUTO_HIGHLIGHT_LABEL" desc="Dropdown option for setting the automatic highlight granularity in Read Aloud.">
+        Auto
+      </message>
+      <message name="IDS_READING_MODE_WORD_HIGHLIGHT_LABEL" desc="Dropdown option for setting the word highlight granularity in Read Aloud.">
+        Word
+      </message>
+      <message name="IDS_READING_MODE_SENTENCE_HIGHLIGHT_LABEL" desc="Dropdown option for setting the sentence highlight granularity in Read Aloud.">
+        Sentence
+      </message>
+      <message name="IDS_READING_MODE_OFF_HIGHLIGHT_LABEL" desc="Dropdown option for turning off highlighting in Read Aloud.">
+        Off
       </message>
       <message name="IDS_READ_ANYTHING_LOADING" desc="Message to show while Read Anything is figuring out what text to display.">
         Getting ready
@@ -10341,6 +10360,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Brave P
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_EMPTY_MESSAGE" desc="Message indicating that the list of saved passwords for this site is empty.">
           No saved passwords for <ph name="domain">$1<ex>example.com</ex></ph>
         </message>
+        <message name="IDS_PASSWORD_MANAGER_ACCESSORY_PASSWORD_LIST_TITLE" desc="The title of a list of saved passwords for the currently visible site." translateable="false">
+          Saved passwords for <ph name="domain">$1<ex>example.com</ex></ph>
+        </message>
         <message name="IDS_PASSWORD_MANAGER_ACCESSORY_ALL_PASSWORDS_LINK" desc="The text of the link in the password sheet that opens the password management section.">
           Manage passwords
         </message>
@@ -10854,8 +10876,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Brave P
         <message name="IDS_TAB_CXMENU_ORGANIZE_TABS" desc="The label of the 'Organize tabs' Tab context menu item.">
           Organize similar tabs
         </message>
-        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The of 'Show Product Spec' menu item." translateable="false">
-          Show specifications
+        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The text for the context menu item to compare selected tabs." translateable="false">
+          Compare tabs
         </message>
         <if expr="is_chromeos">
           <message name="IDS_TAB_CXMENU_GROUPED_BY_DESK_MENU_ITEM_A11Y" desc="The a11y message for menu items in 'Move tabs to another window' when grouped by desk.">
@@ -10952,8 +10974,8 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Brave P
         <message name="IDS_TAB_CXMENU_ORGANIZE_TABS" desc="In Title Case: The label of the 'Organize tabs' Tab context menu item.">
           Organize Similar Tabs
         </message>
-        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="The of 'Show Product Spec' menu item." translateable="false">
-          Show specifications
+        <message name="IDS_TAB_CXMENU_COMMERCE_PRODUCT_SPEC" desc="In Title Case: The text for the context menu item to compare selected tabs." translateable="false">
+          Compare Tabs
         </message>
       </if>
 
@@ -13430,6 +13452,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
           <message name="IDS_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="Text for the menu item that lets the user open a dialog to choose another source language for translation, from a list of available languages.">
             Page is not in <ph name="language">$1<ex>French</ex></ph>
           </message>
+          <message name="IDS_TRANSLATE_BUBBLE_OPEN_LANGUAGE_SETTINGS" desc="Text to show for the translate bubble menu item that opens language settings.">
+            Open language settings
+          </message>
           <message name="IDS_PARTIAL_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="Text for the partial translate bubble menu item that lets the user open a dialog to choose another source language for translation, from a list of available languages.">
             Selection is not in <ph name="language">$1<ex>French</ex></ph>
           </message>
@@ -13494,6 +13519,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
           </message>
           <message name="IDS_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="In Title Case: Text to show for the translate bubble menu item which invokes the source language menu.">
             Page Is Not in <ph name="language">$1<ex>French</ex></ph>
+          </message>
+          <message name="IDS_TRANSLATE_BUBBLE_OPEN_LANGUAGE_SETTINGS" desc="In Title Case: Text to show for the translate bubble menu item that opens language settings.">
+            Open Language Settings
           </message>
           <message name="IDS_PARTIAL_TRANSLATE_BUBBLE_CHANGE_SOURCE_LANGUAGE" desc="In Title Case: Text to show for the partial translate bubble menu item which invokes the source language menu.">
             Selection Is Not in <ph name="language">$1<ex>French</ex></ph>
@@ -17505,6 +17533,26 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Performance issue alert
       </message>
     </if>
+
+    <!-- Toast Strings-->
+    <if expr="not is_android">
+      <message name="IDS_LINK_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when a link is successfully copied.">
+        Link copied
+      </message>
+      <message name="IDS_IMAGE_COPIED_TOAST_BODY" desc="Text on a toast notification that is shown when an image is successfully copied.">
+        Image copied
+      </message>
+      <message name="IDS_LINK_COPIED_TO_HIGHLIGHT_TOAST_BODY" desc="Text on a toast notification that is shown when a link to highlight is successfully copied.">
+        Link copied to highlight
+      </message>
+      <message name="IDS_READING_LIST_TOAST_BODY" desc="Text on a toast notification that is shown when an item is added to the reading list.">
+        Page added to reading list
+      </message>
+      <message name="IDS_READING_LIST_TOAST_BUTTON" desc="Button on a toast notification that allows a user to open a reading list entry.">
+        Open
+      </message>
+    </if>
+
     <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
       Location
     </message>
