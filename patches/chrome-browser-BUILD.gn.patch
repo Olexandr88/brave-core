@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index f1929da7b0c54281bb3287153e5d3442d41b55b8..2daf198fa746cda2cd3ca2dfd31d69a5ffb6a788 100644
+index f4f8e674afa03e90c5089ddbab388b17b484752b..458c5021c6b99e5a3d50000ac08b46553c70fabe 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -2516,6 +2516,7 @@ static_library("browser") {
+@@ -2529,6 +2529,7 @@ static_library("browser") {
        "performance_monitor/metric_evaluator_helper_posix.h",
      ]
    }
@@ -10,7 +10,7 @@ index f1929da7b0c54281bb3287153e5d3442d41b55b8..2daf198fa746cda2cd3ca2dfd31d69a5
  
    if (!is_chromeos_ash) {
      sources += [
-@@ -4248,7 +4249,6 @@ static_library("browser") {
+@@ -4256,7 +4257,6 @@ static_library("browser") {
        "//chrome/browser/apps/link_capturing:features",
        "//chrome/browser/companion/core",
        "//chrome/browser/companion/visual_query",
@@ -18,7 +18,7 @@ index f1929da7b0c54281bb3287153e5d3442d41b55b8..2daf198fa746cda2cd3ca2dfd31d69a5
        "//chrome/browser/enterprise/signals:utils",
        "//chrome/browser/feedback:feedback_enum",
        "//chrome/browser/icon_transcoder",
-@@ -6716,6 +6716,7 @@ static_library("browser") {
+@@ -6745,6 +6745,7 @@ static_library("browser") {
        "enterprise/connectors/connectors_service.h",
      ]
      deps += [ "//components/enterprise/connectors/core" ]

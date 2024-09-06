@@ -1,8 +1,8 @@
 diff --git a/chrome/test/BUILD.gn b/chrome/test/BUILD.gn
-index 157749e08ba62fb61e79bff0720be073c3717c64..9d5c5dcd7839c31093493ed47bb9120d2d758166 100644
+index 1fe0ea422d36b3ba803207cd0a1234dce4c5c3c2..ecca8251e79affa011ae2598f494c0b9ff3a9633 100644
 --- a/chrome/test/BUILD.gn
 +++ b/chrome/test/BUILD.gn
-@@ -568,6 +568,7 @@ static_library("test_support") {
+@@ -573,6 +573,7 @@ static_library("test_support") {
      "//ui/gl",
    ]
  
@@ -10,7 +10,7 @@ index 157749e08ba62fb61e79bff0720be073c3717c64..9d5c5dcd7839c31093493ed47bb9120d
    data = []
    data_deps = []
  
-@@ -3293,7 +3294,6 @@ if (!is_android) {
+@@ -3300,7 +3301,6 @@ if (!is_android) {
            "../browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_browsertest.cc",
            "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
          ]
@@ -18,7 +18,7 @@ index 157749e08ba62fb61e79bff0720be073c3717c64..9d5c5dcd7839c31093493ed47bb9120d
        }
      }
  
-@@ -9601,6 +9601,7 @@ test("unit_tests") {
+@@ -9611,6 +9611,7 @@ test("unit_tests") {
        "../browser/enterprise/connectors/connectors_service_unittest.cc",
      ]
      deps += [ "//components/enterprise/connectors/core" ]
