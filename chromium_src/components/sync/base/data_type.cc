@@ -7,7 +7,6 @@
 #include "src/components/sync/base/data_type.cc"
 #undef EncryptableUserTypes
 
-
 namespace syncer {
 
 DataTypeSet EncryptableUserTypes() {
