@@ -22,8 +22,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "url/gurl.h"
 
@@ -79,12 +77,7 @@ class BraveContentSettingsAgentImpl
   bool IsBraveShieldsDown(const blink::WebFrame* frame,
                           const GURL& secondary_url);
 
-  bool IsScriptTemporilyAllowed(const GURL& script_url);
-
-  // True if `render_frame()` contains content that is allowlisted for content
-  // settings.
-  bool IsAllowlistedForContentSettings(const blink::WebSecurityOrigin& origin,
-                                       const blink::WebURL& document_url) const;
+  bool IsScriptTemporarilyAllowed(const GURL& script_url);
 
   // brave_shields::mojom::BraveShields.
   void SetAllowScriptsFromOriginsOnce(

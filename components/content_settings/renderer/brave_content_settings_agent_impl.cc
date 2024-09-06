@@ -19,7 +19,6 @@
 #include "brave/components/brave_shields/core/common/features.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
-#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "net/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -97,9 +96,9 @@ BraveContentSettingsAgentImpl::BraveContentSettingsAgentImpl(
 
 BraveContentSettingsAgentImpl::~BraveContentSettingsAgentImpl() = default;
 
-bool BraveContentSettingsAgentImpl::IsScriptTemporilyAllowed(
+bool BraveContentSettingsAgentImpl::IsScriptTemporarilyAllowed(
     const GURL& script_url) {
-  // Check if scripts from this origin are temporily allowed or not.
+  // Check if scripts from this origin are temporarily allowed or not.
   // Also matches the full script URL to support data URL cases which we use
   // the full URL to allow it.
   bool allow = base::Contains(temporarily_allowed_scripts_,
@@ -112,7 +111,7 @@ bool BraveContentSettingsAgentImpl::IsScriptTemporilyAllowed(
     if (main_frame && main_frame != render_frame()) {
       allow = static_cast<BraveContentSettingsAgentImpl*>(
                   ContentSettingsAgentImpl::Get(main_frame))
-                  ->IsScriptTemporilyAllowed(script_url);
+                  ->IsScriptTemporarilyAllowed(script_url);
     }
   }
   return allow;
@@ -148,12 +147,13 @@ bool BraveContentSettingsAgentImpl::AllowScript(bool enabled_per_settings) {
   const GURL secondary_url(url::Origin(frame->GetSecurityOrigin()).GetURL());
   bool allow = ContentSettingsAgentImpl::AllowScript(enabled_per_settings);
   auto is_shields_down = IsBraveShieldsDown(frame, secondary_url);
-  auto is_script_temprily_allowed = IsScriptTemporilyAllowed(secondary_url);
-  allow = allow || is_shields_down || is_script_temprily_allowed;
+  auto is_script_temporarily_allowed =
+      IsScriptTemporarilyAllowed(secondary_url);
+  allow = allow || is_shields_down || is_script_temporarily_allowed;
   if (!allow) {
     blocked_script_url_ = secondary_url;
   } else if (!is_shields_down) {
-    if (is_script_temprily_allowed) {
+    if (is_script_temporarily_allowed) {
       BraveSpecificDidAllowJavaScriptOnce(secondary_url);
     }
   }
@@ -188,21 +188,16 @@ bool BraveContentSettingsAgentImpl::AllowScriptFromSource(
   bool allow = ContentSettingsAgentImpl::AllowScriptFromSource(
       enabled_per_settings, script_url);
 
-  // scripts with whitelisted protocols, such as chrome://extensions should
-  // be allowed
-  bool should_white_list = IsAllowlistedForContentSettings(
-      blink::WebSecurityOrigin::Create(script_url),
-      render_frame()->GetWebFrame()->GetDocument().Url());
   auto is_shields_down =
       IsBraveShieldsDown(render_frame()->GetWebFrame(), secondary_url);
-  auto is_script_temprily_allowed = IsScriptTemporilyAllowed(secondary_url);
-  allow = allow || should_white_list || is_shields_down ||
-          is_script_temprily_allowed;
+  auto is_script_temporarily_allowed =
+      IsScriptTemporarilyAllowed(secondary_url);
+  allow = allow || is_shields_down || is_script_temporarily_allowed;
 
   if (!allow) {
     blocked_script_url_ = secondary_url;
   } else if (!is_shields_down) {
-    if (is_script_temprily_allowed) {
+    if (is_script_temporarily_allowed) {
       BraveSpecificDidAllowJavaScriptOnce(secondary_url);
     }
   }
@@ -430,40 +425,6 @@ BraveContentSettingsAgentImpl::GetOrCreateBraveShieldsRemote() {
 
   DCHECK(brave_shields_remote_.is_bound());
   return brave_shields_remote_;
-}
-
-bool BraveContentSettingsAgentImpl::IsAllowlistedForContentSettings(
-    const blink::WebSecurityOrigin& origin,
-    const blink::WebURL& document_url) const {
-  if (document_url.GetString() == content::kUnreachableWebDataURL) {
-    return true;
-  }
-
-  if (origin.IsNull() || origin.IsOpaque()) {
-    return false;  // Uninitialized document?
-  }
-
-  blink::WebString protocol = origin.Protocol();
-
-  if (protocol == content::kChromeUIScheme) {
-    return true;  // Browser UI elements should still work.
-  }
-
-  if (protocol == content::kChromeDevToolsScheme) {
-    return true;  // DevTools UI elements should still work.
-  }
-
-  if (delegate_->IsSchemeAllowlisted(protocol.Utf8())) {
-    return true;
-  }
-
-  // If the scheme is file:, an empty file name indicates a directory listing,
-  // which requires JavaScript to function properly.
-  if (protocol == url::kFileScheme &&
-      document_url.ProtocolIs(url::kFileScheme)) {
-    return GURL(document_url).ExtractFileName().empty();
-  }
-  return false;
 }
 
 }  // namespace content_settings
