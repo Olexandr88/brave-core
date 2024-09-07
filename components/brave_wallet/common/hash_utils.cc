@@ -15,7 +15,7 @@
 #include "base/strings/string_split.h"
 #include "brave/components/brave_wallet/common/eth_abi_utils.h"
 #include "brave/components/brave_wallet/common/hex_utils.h"
-#include "brave/third_party/bitcoin-core/src/src/crypto/ripemd160.h"
+//#include "brave/third_party/bitcoin-core/src/src/crypto/ripemd160.h"
 #include "brave/third_party/ethash/src/include/ethash/keccak.h"
 #include "crypto/sha2.h"
 
@@ -80,17 +80,18 @@ SHA256HashArray DoubleSHA256Hash(base::span<const uint8_t> input) {
 }
 
 std::vector<uint8_t> Hash160(base::span<const uint8_t> input) {
-  std::vector<uint8_t> result(CRIPEMD160::OUTPUT_SIZE);
+  // std::vector<uint8_t> result(CRIPEMD160::OUTPUT_SIZE);
 
-  std::array<uint8_t, crypto::kSHA256Length> sha256hash =
-      crypto::SHA256Hash(input);
-  DCHECK(!sha256hash.empty());
+  // std::array<uint8_t, crypto::kSHA256Length> sha256hash =
+  //     crypto::SHA256Hash(input);
+  // DCHECK(!sha256hash.empty());
 
-  CRIPEMD160()
-      .Write(sha256hash.data(), sha256hash.size())
-      .Finalize(result.data());
+  // CRIPEMD160()
+  //     .Write(sha256hash.data(), sha256hash.size())
+  //     .Finalize(result.data());
 
-  return result;
+  // return result;
+  return std::vector<uint8_t>();
 }
 
 }  // namespace brave_wallet

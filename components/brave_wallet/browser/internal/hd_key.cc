@@ -20,7 +20,7 @@
 #include "brave/components/brave_wallet/common/bitcoin_utils.h"
 #include "brave/components/brave_wallet/common/hash_utils.h"
 #include "brave/components/brave_wallet/common/zcash_utils.h"
-#include "brave/third_party/bitcoin-core/src/src/base58.h"
+//#include "brave/third_party/bitcoin-core/src/src/base58.h"
 #include "brave/vendor/bat-native-tweetnacl/tweetnacl.h"
 #include "crypto/encryptor.h"
 #include "crypto/random.h"
@@ -28,8 +28,8 @@
 #include "third_party/boringssl/src/include/openssl/hmac.h"
 
 #define SECP256K1_BUILD  // This effectively turns off export attributes.
-#include "brave/third_party/bitcoin-core/src/src/secp256k1/include/secp256k1.h"
-#include "brave/third_party/bitcoin-core/src/src/secp256k1/include/secp256k1_recovery.h"
+// #include "brave/third_party/bitcoin-core/src/src/secp256k1/include/secp256k1.h"
+// #include "brave/third_party/bitcoin-core/src/src/secp256k1/include/secp256k1_recovery.h"
 
 using crypto::Encryptor;
 using crypto::SymmetricKey;
@@ -41,25 +41,25 @@ constexpr char kMasterNode[] = "m";
 constexpr char kMasterSecret[] = "Bitcoin seed";
 constexpr size_t kSHA512Length = 64;
 constexpr uint32_t kHardenedOffset = 0x80000000;
-constexpr size_t kSerializationLength = 78;
-constexpr size_t kMaxDerSignatureSize = 72;
-constexpr size_t kContextRandomizeSize = 32;
+// constexpr size_t kSerializationLength = 78;
+// constexpr size_t kMaxDerSignatureSize = 72;
+// constexpr size_t kContextRandomizeSize = 32;
 
-const secp256k1_context* GetSecp256k1Ctx() {
-  static const secp256k1_context* const kSecp256k1Ctx = [] {
-    secp256k1_context* context = secp256k1_context_create(
-        SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
+// const secp256k1_context* GetSecp256k1Ctx() {
+//   static const secp256k1_context* const kSecp256k1Ctx = [] {
+//     secp256k1_context* context = secp256k1_context_create(
+//         SECP256K1_CONTEXT_SIGN | SECP256K1_CONTEXT_VERIFY);
 
-    SecureVector bytes(kContextRandomizeSize);
-    crypto::RandBytes(bytes);
-    [[maybe_unused]] int result =
-        secp256k1_context_randomize(context, bytes.data());
+//     SecureVector bytes(kContextRandomizeSize);
+//     crypto::RandBytes(bytes);
+//     [[maybe_unused]] int result =
+//         secp256k1_context_randomize(context, bytes.data());
 
-    return context;
-  }();
+//     return context;
+//   }();
 
-  return kSecp256k1Ctx;
-}
+//   return kSecp256k1Ctx;
+// }
 
 bool UTCPasswordVerification(const std::string& derived_key,
                              const std::vector<uint8_t>& ciphertext,
@@ -149,51 +149,52 @@ std::unique_ptr<HDKey> HDKey::GenerateFromSeed(base::span<const uint8_t> seed) {
 // static
 std::unique_ptr<HDKey::ParsedExtendedKey> HDKey::GenerateFromExtendedKey(
     const std::string& key) {
-  std::vector<unsigned char> decoded_key(kSerializationLength);
-  if (!DecodeBase58Check(key, decoded_key, decoded_key.size())) {
-    LOG(ERROR) << __func__ << ": DecodeBase58Check failed";
-    return nullptr;
-  }
+return nullptr;
+  // std::vector<unsigned char> decoded_key(kSerializationLength);
+  // if (!DecodeBase58Check(key, decoded_key, decoded_key.size())) {
+  //   LOG(ERROR) << __func__ << ": DecodeBase58Check failed";
+  //   return nullptr;
+  // }
 
-  SecureVector buf(decoded_key.begin(), decoded_key.end());
-  SecureZeroData(base::as_writable_byte_span(decoded_key));
-  // version(4) || depth(1) || parent_fingerprint(4) || index(4) || chain(32) ||
-  // key(33)
-  const uint8_t* ptr = buf.data();
-  auto version = static_cast<ExtendedKeyVersion>(ptr[0] << 24 | ptr[1] << 16 |
-                                                 ptr[2] << 8 | ptr[3] << 0);
-  ptr += sizeof(version);
+  // SecureVector buf(decoded_key.begin(), decoded_key.end());
+  // SecureZeroData(base::as_writable_byte_span(decoded_key));
+  // // version(4) || depth(1) || parent_fingerprint(4) || index(4) || chain(32) ||
+  // // key(33)
+  // const uint8_t* ptr = buf.data();
+  // auto version = static_cast<ExtendedKeyVersion>(ptr[0] << 24 | ptr[1] << 16 |
+  //                                                ptr[2] << 8 | ptr[3] << 0);
+  // ptr += sizeof(version);
 
-  uint8_t depth = *ptr;
-  ptr += sizeof(depth);
+  // uint8_t depth = *ptr;
+  // ptr += sizeof(depth);
 
-  int32_t parent_fingerprint =
-      ptr[0] << 24 | ptr[1] << 16 | ptr[2] << 8 | ptr[3] << 0;
-  ptr += sizeof(parent_fingerprint);
+  // int32_t parent_fingerprint =
+  //     ptr[0] << 24 | ptr[1] << 16 | ptr[2] << 8 | ptr[3] << 0;
+  // ptr += sizeof(parent_fingerprint);
 
-  int32_t index = ptr[0] << 24 | ptr[1] << 16 | ptr[2] << 8 | ptr[3] << 0;
-  ptr += sizeof(index);
+  // int32_t index = ptr[0] << 24 | ptr[1] << 16 | ptr[2] << 8 | ptr[3] << 0;
+  // ptr += sizeof(index);
 
-  std::unique_ptr<HDKey> hdkey = std::make_unique<HDKey>();
-  hdkey->depth_ = depth;
-  hdkey->parent_fingerprint_ = parent_fingerprint;
-  hdkey->index_ = index;
+  // std::unique_ptr<HDKey> hdkey = std::make_unique<HDKey>();
+  // hdkey->depth_ = depth;
+  // hdkey->parent_fingerprint_ = parent_fingerprint;
+  // hdkey->index_ = index;
 
-  std::vector<uint8_t> chain_code(ptr, ptr + 32);
-  ptr += chain_code.size();
-  hdkey->SetChainCode(chain_code);
+  // std::vector<uint8_t> chain_code(ptr, ptr + 32);
+  // ptr += chain_code.size();
+  // hdkey->SetChainCode(chain_code);
 
-  if (*ptr == 0x00) {
-    // Skip first zero byte which is not part of private key.
-    hdkey->SetPrivateKey(base::make_span(ptr + 1, ptr + 33));
-  } else {
-    hdkey->SetPublicKey(*base::span(ptr, ptr + kSecp256k1PubkeySize)
-                             .to_fixed_extent<kSecp256k1PubkeySize>());
-  }
-  auto result = std::make_unique<ParsedExtendedKey>();
-  result->hdkey = std::move(hdkey);
-  result->version = version;
-  return result;
+  // if (*ptr == 0x00) {
+  //   // Skip first zero byte which is not part of private key.
+  //   hdkey->SetPrivateKey(base::make_span(ptr + 1, ptr + 33));
+  // } else {
+  //   hdkey->SetPublicKey(*base::span(ptr, ptr + kSecp256k1PubkeySize)
+  //                            .to_fixed_extent<kSecp256k1PubkeySize>());
+  // }
+  // auto result = std::make_unique<ParsedExtendedKey>();
+  // result->hdkey = std::move(hdkey);
+  // result->version = version;
+  // return result;
 }
 
 // static
@@ -402,18 +403,19 @@ std::vector<uint8_t> HDKey::GetPublicKeyBytes() const {
 
 void HDKey::SetPublicKey(
     base::span<const uint8_t, kSecp256k1PubkeySize> value) {
-  // Verify public key
-  secp256k1_pubkey pubkey;
-  if (!secp256k1_ec_pubkey_parse(GetSecp256k1Ctx(), &pubkey, value.data(),
-                                 value.size())) {
-    LOG(ERROR) << __func__ << ": not a valid public key";
-    return;
-  }
-  public_key_.assign(value.begin(), value.end());
-  identifier_ = Hash160(public_key_);
+return;
+  // // Verify public key
+  // secp256k1_pubkey pubkey;
+  // if (!secp256k1_ec_pubkey_parse(GetSecp256k1Ctx(), &pubkey, value.data(),
+  //                                value.size())) {
+  //   LOG(ERROR) << __func__ << ": not a valid public key";
+  //   return;
+  // }
+  // public_key_.assign(value.begin(), value.end());
+  // identifier_ = Hash160(public_key_);
 
-  const uint8_t* ptr = identifier_.data();
-  fingerprint_ = ptr[0] << 24 | ptr[1] << 16 | ptr[2] << 8 | ptr[3] << 0;
+  // const uint8_t* ptr = identifier_.data();
+  // fingerprint_ = ptr[0] << 24 | ptr[1] << 16 | ptr[2] << 8 | ptr[3] << 0;
 }
 
 std::string HDKey::GetPublicExtendedKey(ExtendedKeyVersion version) const {
@@ -424,17 +426,17 @@ std::vector<uint8_t> HDKey::GetUncompressedPublicKey() const {
   // uncompressed
   size_t public_key_len = 65;
   std::vector<uint8_t> public_key(public_key_len);
-  secp256k1_pubkey pubkey;
-  if (!secp256k1_ec_pubkey_parse(GetSecp256k1Ctx(), &pubkey, public_key_.data(),
-                                 public_key_.size())) {
-    LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_parse failed";
-    return public_key;
-  }
-  if (!secp256k1_ec_pubkey_serialize(GetSecp256k1Ctx(), public_key.data(),
-                                     &public_key_len, &pubkey,
-                                     SECP256K1_EC_UNCOMPRESSED)) {
-    LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_serialize failed";
-  }
+  // secp256k1_pubkey pubkey;
+  // if (!secp256k1_ec_pubkey_parse(GetSecp256k1Ctx(), &pubkey, public_key_.data(),
+  //                                public_key_.size())) {
+  //   LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_parse failed";
+  //   return public_key;
+  // }
+  // if (!secp256k1_ec_pubkey_serialize(GetSecp256k1Ctx(), public_key.data(),
+  //                                    &public_key_len, &pubkey,
+  //                                    SECP256K1_EC_UNCOMPRESSED)) {
+  //   LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_serialize failed";
+  // }
 
   return public_key;
 }
@@ -513,89 +515,90 @@ std::unique_ptr<HDKey> HDKey::DeriveHardenedChild(uint32_t index) {
 }
 
 std::unique_ptr<HDKey> HDKey::DeriveChild(uint32_t index) {
-  bool is_hardened = index >= kHardenedOffset;
-  SecureVector data;
+return nullptr;
+  // bool is_hardened = index >= kHardenedOffset;
+  // SecureVector data;
 
-  if (is_hardened) {
-    // Hardened: data = 0x00 || ser256(kpar) || ser32(index)
-    DCHECK(!private_key_.empty());
-    data.push_back(0x00);
-    data.insert(data.end(), private_key_.begin(), private_key_.end());
-  } else {
-    // Normal private: data = serP(point(kpar)) || ser32(index)
-    // Normal pubic  : data = serP(Kpar) || ser32(index)
-    //     serP(Kpar) is public key when point(kpar) is private key
-    data.insert(data.end(), public_key_.begin(), public_key_.end());
-  }
-  data.push_back((index >> 24) & 0xFF);
-  data.push_back((index >> 16) & 0xFF);
-  data.push_back((index >> 8) & 0xFF);
-  data.push_back(index & 0xFF);
+  // if (is_hardened) {
+  //   // Hardened: data = 0x00 || ser256(kpar) || ser32(index)
+  //   DCHECK(!private_key_.empty());
+  //   data.push_back(0x00);
+  //   data.insert(data.end(), private_key_.begin(), private_key_.end());
+  // } else {
+  //   // Normal private: data = serP(point(kpar)) || ser32(index)
+  //   // Normal pubic  : data = serP(Kpar) || ser32(index)
+  //   //     serP(Kpar) is public key when point(kpar) is private key
+  //   data.insert(data.end(), public_key_.begin(), public_key_.end());
+  // }
+  // data.push_back((index >> 24) & 0xFF);
+  // data.push_back((index >> 16) & 0xFF);
+  // data.push_back((index >> 8) & 0xFF);
+  // data.push_back(index & 0xFF);
 
-  SecureVector hmac(kSHA512Length);
-  unsigned int out_len;
-  if (!HMAC(EVP_sha512(), chain_code_.data(), chain_code_.size(), data.data(),
-            data.size(), hmac.data(), &out_len)) {
-    LOG(ERROR) << __func__ << ": HMAC_SHA512 failed";
-    return nullptr;
-  }
-  DCHECK(out_len == kSHA512Length);
+  // SecureVector hmac(kSHA512Length);
+  // unsigned int out_len;
+  // if (!HMAC(EVP_sha512(), chain_code_.data(), chain_code_.size(), data.data(),
+  //           data.size(), hmac.data(), &out_len)) {
+  //   LOG(ERROR) << __func__ << ": HMAC_SHA512 failed";
+  //   return nullptr;
+  // }
+  // DCHECK(out_len == kSHA512Length);
 
-  auto hmac_span = base::make_span(hmac);
-  auto IL = hmac_span.first(kSHA512Length / 2);
-  auto IR = hmac_span.last(kSHA512Length / 2);
+  // auto hmac_span = base::make_span(hmac);
+  // auto IL = hmac_span.first(kSHA512Length / 2);
+  // auto IR = hmac_span.last(kSHA512Length / 2);
 
-  std::unique_ptr<HDKey> hdkey = std::make_unique<HDKey>();
-  hdkey->SetChainCode(IR);
+  // std::unique_ptr<HDKey> hdkey = std::make_unique<HDKey>();
+  // hdkey->SetChainCode(IR);
 
-  if (!private_key_.empty()) {
-    // Private parent key -> private child key
-    // Also Private parent key -> public child key because we always create
-    // public key.
-    SecureVector private_key = private_key_;
-    if (!secp256k1_ec_seckey_tweak_add(GetSecp256k1Ctx(), private_key.data(),
-                                       IL.data())) {
-      LOG(ERROR) << __func__ << ": secp256k1_ec_seckey_tweak_add failed";
-      return nullptr;
-    }
-    hdkey->SetPrivateKey(private_key);
-  } else {
-    // Public parent key -> public child key (Normal only)
-    DCHECK(!is_hardened);
-    secp256k1_pubkey pubkey;
-    if (!secp256k1_ec_pubkey_parse(GetSecp256k1Ctx(), &pubkey,
-                                   public_key_.data(), public_key_.size())) {
-      LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_parse failed";
-      return nullptr;
-    }
+  // if (!private_key_.empty()) {
+  //   // Private parent key -> private child key
+  //   // Also Private parent key -> public child key because we always create
+  //   // public key.
+  //   SecureVector private_key = private_key_;
+  //   if (!secp256k1_ec_seckey_tweak_add(GetSecp256k1Ctx(), private_key.data(),
+  //                                      IL.data())) {
+  //     LOG(ERROR) << __func__ << ": secp256k1_ec_seckey_tweak_add failed";
+  //     return nullptr;
+  //   }
+  //   hdkey->SetPrivateKey(private_key);
+  // } else {
+  //   // Public parent key -> public child key (Normal only)
+  //   DCHECK(!is_hardened);
+  //   secp256k1_pubkey pubkey;
+  //   if (!secp256k1_ec_pubkey_parse(GetSecp256k1Ctx(), &pubkey,
+  //                                  public_key_.data(), public_key_.size())) {
+  //     LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_parse failed";
+  //     return nullptr;
+  //   }
 
-    if (!secp256k1_ec_pubkey_tweak_add(GetSecp256k1Ctx(), &pubkey, IL.data())) {
-      LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_tweak_add failed";
-      return nullptr;
-    }
-    size_t public_key_len = kSecp256k1PubkeySize;
-    std::array<uint8_t, kSecp256k1PubkeySize> public_key;
-    if (!secp256k1_ec_pubkey_serialize(GetSecp256k1Ctx(), public_key.data(),
-                                       &public_key_len, &pubkey,
-                                       SECP256K1_EC_COMPRESSED)) {
-      LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_serialize failed";
-      return nullptr;
-    }
-    hdkey->SetPublicKey(public_key);
-  }
+  //   if (!secp256k1_ec_pubkey_tweak_add(GetSecp256k1Ctx(), &pubkey, IL.data())) {
+  //     LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_tweak_add failed";
+  //     return nullptr;
+  //   }
+  //   size_t public_key_len = kSecp256k1PubkeySize;
+  //   std::array<uint8_t, kSecp256k1PubkeySize> public_key;
+  //   if (!secp256k1_ec_pubkey_serialize(GetSecp256k1Ctx(), public_key.data(),
+  //                                      &public_key_len, &pubkey,
+  //                                      SECP256K1_EC_COMPRESSED)) {
+  //     LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_serialize failed";
+  //     return nullptr;
+  //   }
+  //   hdkey->SetPublicKey(public_key);
+  // }
 
-  if (!path_.empty()) {
-    const std::string node =
-        is_hardened ? base::NumberToString(index - kHardenedOffset) + "'"
-                    : base::NumberToString(index);
+  // if (!path_.empty()) {
+  //   const std::string node =
+  //       is_hardened ? base::NumberToString(index - kHardenedOffset) + "'"
+  //                   : base::NumberToString(index);
 
-    hdkey->path_ = base::StrCat({path_, "/", node});
-  }
-  hdkey->depth_ = depth_ + 1;
-  hdkey->parent_fingerprint_ = fingerprint_;
-  hdkey->index_ = index;
+  //   hdkey->path_ = base::StrCat({path_, "/", node});
+  // }
+  // hdkey->depth_ = depth_ + 1;
+  // hdkey->parent_fingerprint_ = fingerprint_;
+  // hdkey->index_ = index;
 
-  return hdkey;
+  // return hdkey;
 }
 
 std::unique_ptr<HDKey> HDKey::DeriveChildFromPath(const std::string& path) {
@@ -659,117 +662,120 @@ std::unique_ptr<HDKey> HDKey::DeriveChildFromPath(const std::string& path) {
 std::vector<uint8_t> HDKey::SignCompact(base::span<const uint8_t> msg,
                                         int* recid) {
   std::vector<uint8_t> sig(kCompactSignatureSize);
-  if (msg.size() != 32) {
-    LOG(ERROR) << __func__ << ": message length should be 32";
-    return sig;
-  }
-  if (!recid) {
-    secp256k1_ecdsa_signature ecdsa_sig;
-    if (!secp256k1_ecdsa_sign(GetSecp256k1Ctx(), &ecdsa_sig, msg.data(),
-                              private_key_.data(),
-                              secp256k1_nonce_function_rfc6979, nullptr)) {
-      LOG(ERROR) << __func__ << ": secp256k1_ecdsa_sign failed";
-      return sig;
-    }
-
-    if (!secp256k1_ecdsa_signature_serialize_compact(GetSecp256k1Ctx(),
-                                                     sig.data(), &ecdsa_sig)) {
-      LOG(ERROR) << __func__
-                 << ": secp256k1_ecdsa_signature_serialize_compact failed";
-    }
-  } else {
-    secp256k1_ecdsa_recoverable_signature ecdsa_sig;
-    if (!secp256k1_ecdsa_sign_recoverable(
-            GetSecp256k1Ctx(), &ecdsa_sig, msg.data(), private_key_.data(),
-            secp256k1_nonce_function_rfc6979, nullptr)) {
-      LOG(ERROR) << __func__ << ": secp256k1_ecdsa_sign_recoverable failed";
-      return sig;
-    }
-    if (!secp256k1_ecdsa_recoverable_signature_serialize_compact(
-            GetSecp256k1Ctx(), sig.data(), recid, &ecdsa_sig)) {
-      LOG(ERROR)
-          << __func__
-          << ": secp256k1_ecdsa_recoverable_signature_serialize_compact failed";
-    }
-  }
-
   return sig;
+  // if (msg.size() != 32) {
+  //   LOG(ERROR) << __func__ << ": message length should be 32";
+  //   return sig;
+  // }
+  // if (!recid) {
+  //   secp256k1_ecdsa_signature ecdsa_sig;
+  //   if (!secp256k1_ecdsa_sign(GetSecp256k1Ctx(), &ecdsa_sig, msg.data(),
+  //                             private_key_.data(),
+  //                             secp256k1_nonce_function_rfc6979, nullptr)) {
+  //     LOG(ERROR) << __func__ << ": secp256k1_ecdsa_sign failed";
+  //     return sig;
+  //   }
+
+  //   if (!secp256k1_ecdsa_signature_serialize_compact(GetSecp256k1Ctx(),
+  //                                                    sig.data(), &ecdsa_sig)) {
+  //     LOG(ERROR) << __func__
+  //                << ": secp256k1_ecdsa_signature_serialize_compact failed";
+  //   }
+  // } else {
+  //   secp256k1_ecdsa_recoverable_signature ecdsa_sig;
+  //   if (!secp256k1_ecdsa_sign_recoverable(
+  //           GetSecp256k1Ctx(), &ecdsa_sig, msg.data(), private_key_.data(),
+  //           secp256k1_nonce_function_rfc6979, nullptr)) {
+  //     LOG(ERROR) << __func__ << ": secp256k1_ecdsa_sign_recoverable failed";
+  //     return sig;
+  //   }
+  //   if (!secp256k1_ecdsa_recoverable_signature_serialize_compact(
+  //           GetSecp256k1Ctx(), sig.data(), recid, &ecdsa_sig)) {
+  //     LOG(ERROR)
+  //         << __func__
+  //         << ": secp256k1_ecdsa_recoverable_signature_serialize_compact failed";
+  //   }
+  // }
+
+  // return sig;
 }
 
 std::optional<std::vector<uint8_t>> HDKey::SignDer(
     base::span<const uint8_t, 32> msg) {
-  unsigned char extra_entropy[32] = {0};
-  secp256k1_ecdsa_signature ecdsa_sig;
-  if (!secp256k1_ecdsa_sign(GetSecp256k1Ctx(), &ecdsa_sig, msg.data(),
-                            private_key_.data(),
-                            secp256k1_nonce_function_rfc6979, nullptr)) {
-    LOG(ERROR) << __func__ << ": secp256k1_ecdsa_sign failed";
-    return std::nullopt;
-  }
+return std::nullopt;
+  // unsigned char extra_entropy[32] = {0};
+  // secp256k1_ecdsa_signature ecdsa_sig;
+  // if (!secp256k1_ecdsa_sign(GetSecp256k1Ctx(), &ecdsa_sig, msg.data(),
+  //                           private_key_.data(),
+  //                           secp256k1_nonce_function_rfc6979, nullptr)) {
+  //   LOG(ERROR) << __func__ << ": secp256k1_ecdsa_sign failed";
+  //   return std::nullopt;
+  // }
 
-  auto sig_has_low_r = [](const secp256k1_context* ctx,
-                          const secp256k1_ecdsa_signature* sig) {
-    uint8_t compact_sig[kCompactSignatureSize] = {};
-    secp256k1_ecdsa_signature_serialize_compact(ctx, compact_sig, sig);
+  // auto sig_has_low_r = [](const secp256k1_context* ctx,
+  //                         const secp256k1_ecdsa_signature* sig) {
+  //   uint8_t compact_sig[kCompactSignatureSize] = {};
+  //   secp256k1_ecdsa_signature_serialize_compact(ctx, compact_sig, sig);
 
-    return compact_sig[0] < 0x80;
-  };
+  //   return compact_sig[0] < 0x80;
+  // };
 
-  // Grind R https://github.com/bitcoin/bitcoin/pull/13666
-  uint32_t extra_entropy_counter = 0;
-  while (!sig_has_low_r(GetSecp256k1Ctx(), &ecdsa_sig)) {
-    base::as_writable_byte_span(extra_entropy)
-        .first<4>()
-        .copy_from(base::byte_span_from_ref(base::numerics::U32FromLittleEndian(
-            base::byte_span_from_ref(++extra_entropy_counter))));
+  // // Grind R https://github.com/bitcoin/bitcoin/pull/13666
+  // uint32_t extra_entropy_counter = 0;
+  // while (!sig_has_low_r(GetSecp256k1Ctx(), &ecdsa_sig)) {
+  //   base::as_writable_byte_span(extra_entropy)
+  //       .first<4>()
+  //       .copy_from(base::byte_span_from_ref(base::numerics::U32FromLittleEndian(
+  //           base::byte_span_from_ref(++extra_entropy_counter))));
 
-    if (!secp256k1_ecdsa_sign(
-            GetSecp256k1Ctx(), &ecdsa_sig, msg.data(), private_key_.data(),
-            secp256k1_nonce_function_rfc6979, extra_entropy)) {
-      LOG(ERROR) << __func__ << ": secp256k1_ecdsa_sign failed";
-      return std::nullopt;
-    }
-  }
+  //   if (!secp256k1_ecdsa_sign(
+  //           GetSecp256k1Ctx(), &ecdsa_sig, msg.data(), private_key_.data(),
+  //           secp256k1_nonce_function_rfc6979, extra_entropy)) {
+  //     LOG(ERROR) << __func__ << ": secp256k1_ecdsa_sign failed";
+  //     return std::nullopt;
+  //   }
+  // }
 
-  std::vector<uint8_t> sig_der(kMaxDerSignatureSize);
-  size_t sig_der_length = sig_der.size();
-  if (!secp256k1_ecdsa_signature_serialize_der(
-          GetSecp256k1Ctx(), sig_der.data(), &sig_der_length, &ecdsa_sig)) {
-    return std::nullopt;
-  }
-  sig_der.resize(sig_der_length);
+  // std::vector<uint8_t> sig_der(kMaxDerSignatureSize);
+  // size_t sig_der_length = sig_der.size();
+  // if (!secp256k1_ecdsa_signature_serialize_der(
+  //         GetSecp256k1Ctx(), sig_der.data(), &sig_der_length, &ecdsa_sig)) {
+  //   return std::nullopt;
+  // }
+  // sig_der.resize(sig_der_length);
 
-  // TODO(apaymyshev): verify signature?
+  // // TODO(apaymyshev): verify signature?
 
-  return sig_der;
+  // return sig_der;
 }
 
 bool HDKey::VerifyForTesting(base::span<const uint8_t> msg,
                              base::span<const uint8_t> sig) {
-  if (msg.size() != 32 || sig.size() != kCompactSignatureSize) {
-    LOG(ERROR) << __func__ << ": message or signature length is invalid";
-    return false;
-  }
+  // if (msg.size() != 32 || sig.size() != kCompactSignatureSize) {
+  //   LOG(ERROR) << __func__ << ": message or signature length is invalid";
+  //   return false;
+  // }
 
-  secp256k1_ecdsa_signature ecdsa_sig;
-  if (!secp256k1_ecdsa_signature_parse_compact(GetSecp256k1Ctx(), &ecdsa_sig,
-                                               sig.data())) {
-    LOG(ERROR) << __func__
-               << ": secp256k1_ecdsa_signature_parse_compact failed";
-    return false;
-  }
-  secp256k1_pubkey pubkey;
-  if (!secp256k1_ec_pubkey_parse(GetSecp256k1Ctx(), &pubkey, public_key_.data(),
-                                 public_key_.size())) {
-    LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_parse failed";
-    return false;
-  }
-  if (!secp256k1_ecdsa_verify(GetSecp256k1Ctx(), &ecdsa_sig, msg.data(),
-                              &pubkey)) {
-    LOG(ERROR) << __func__ << ": secp256k1_ecdsa_verify failed";
-    return false;
-  }
-  return true;
+  // secp256k1_ecdsa_signature ecdsa_sig;
+  // if (!secp256k1_ecdsa_signature_parse_compact(GetSecp256k1Ctx(), &ecdsa_sig,
+  //                                              sig.data())) {
+  //   LOG(ERROR) << __func__
+  //              << ": secp256k1_ecdsa_signature_parse_compact failed";
+  //   return false;
+  // }
+  // secp256k1_pubkey pubkey;
+  // if (!secp256k1_ec_pubkey_parse(GetSecp256k1Ctx(), &pubkey, public_key_.data(),
+  //                                public_key_.size())) {
+  //   LOG(ERROR) << __func__ << ": secp256k1_ec_pubkey_parse failed";
+  //   return false;
+  // }
+  // if (!secp256k1_ecdsa_verify(GetSecp256k1Ctx(), &ecdsa_sig, msg.data(),
+  //                             &pubkey)) {
+  //   LOG(ERROR) << __func__ << ": secp256k1_ecdsa_verify failed";
+  //   return false;
+  // }
+  // return true;
+  return false;
 }
 
 std::vector<uint8_t> HDKey::RecoverCompact(bool compressed,
@@ -778,100 +784,104 @@ std::vector<uint8_t> HDKey::RecoverCompact(bool compressed,
                                            int recid) {
   size_t public_key_len = compressed ? 33 : 65;
   std::vector<uint8_t> public_key(public_key_len);
-  if (msg.size() != 32 || sig.size() != kCompactSignatureSize) {
-    LOG(ERROR) << __func__ << ": message or signature length is invalid";
-    return public_key;
-  }
-  if (recid < 0 || recid > 3) {
-    LOG(ERROR) << __func__ << ": recovery id must be 0, 1, 2 or 3";
-    return public_key;
-  }
+return public_key;
+  // if (msg.size() != 32 || sig.size() != kCompactSignatureSize) {
+  //   LOG(ERROR) << __func__ << ": message or signature length is invalid";
+  //   return public_key;
+  // }
+  // if (recid < 0 || recid > 3) {
+  //   LOG(ERROR) << __func__ << ": recovery id must be 0, 1, 2 or 3";
+  //   return public_key;
+  // }
 
-  secp256k1_ecdsa_recoverable_signature ecdsa_sig;
-  if (!secp256k1_ecdsa_recoverable_signature_parse_compact(
-          GetSecp256k1Ctx(), &ecdsa_sig, sig.data(), recid)) {
-    LOG(ERROR)
-        << __func__
-        << ": secp256k1_ecdsa_recoverable_signature_parse_compact failed";
-    return public_key;
-  }
+  // secp256k1_ecdsa_recoverable_signature ecdsa_sig;
+  // if (!secp256k1_ecdsa_recoverable_signature_parse_compact(
+  //         GetSecp256k1Ctx(), &ecdsa_sig, sig.data(), recid)) {
+  //   LOG(ERROR)
+  //       << __func__
+  //       << ": secp256k1_ecdsa_recoverable_signature_parse_compact failed";
+  //   return public_key;
+  // }
 
-  secp256k1_pubkey pubkey;
-  if (!secp256k1_ecdsa_recover(GetSecp256k1Ctx(), &pubkey, &ecdsa_sig,
-                               msg.data())) {
-    LOG(ERROR) << __func__ << ": secp256k1_ecdsa_recover failed";
-    return public_key;
-  }
+  // secp256k1_pubkey pubkey;
+  // if (!secp256k1_ecdsa_recover(GetSecp256k1Ctx(), &pubkey, &ecdsa_sig,
+  //                              msg.data())) {
+  //   LOG(ERROR) << __func__ << ": secp256k1_ecdsa_recover failed";
+  //   return public_key;
+  // }
 
-  if (!secp256k1_ec_pubkey_serialize(
-          GetSecp256k1Ctx(), public_key.data(), &public_key_len, &pubkey,
-          compressed ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED)) {
-    LOG(ERROR) << "secp256k1_ec_pubkey_serialize failed";
-  }
+  // if (!secp256k1_ec_pubkey_serialize(
+  //         GetSecp256k1Ctx(), public_key.data(), &public_key_len, &pubkey,
+  //         compressed ? SECP256K1_EC_COMPRESSED : SECP256K1_EC_UNCOMPRESSED)) {
+  //   LOG(ERROR) << "secp256k1_ec_pubkey_serialize failed";
+  // }
 
-  return public_key;
+  // return public_key;
 }
 
 void HDKey::GeneratePublicKey() {
-  secp256k1_pubkey public_key;
-  if (!secp256k1_ec_pubkey_create(GetSecp256k1Ctx(), &public_key,
-                                  private_key_.data())) {
-    LOG(ERROR) << "secp256k1_ec_pubkey_create failed";
-    return;
-  }
-  size_t public_key_len = 33;
-  if (!secp256k1_ec_pubkey_serialize(GetSecp256k1Ctx(), public_key_.data(),
-                                     &public_key_len, &public_key,
-                                     SECP256K1_EC_COMPRESSED)) {
-    LOG(ERROR) << "secp256k1_ec_pubkey_serialize failed";
-  }
+return;
+  // secp256k1_pubkey public_key;
+  // if (!secp256k1_ec_pubkey_create(GetSecp256k1Ctx(), &public_key,
+  //                                 private_key_.data())) {
+  //   LOG(ERROR) << "secp256k1_ec_pubkey_create failed";
+  //   return;
+  // }
+  // size_t public_key_len = 33;
+  // if (!secp256k1_ec_pubkey_serialize(GetSecp256k1Ctx(), public_key_.data(),
+  //                                    &public_key_len, &public_key,
+  //                                    SECP256K1_EC_COMPRESSED)) {
+  //   LOG(ERROR) << "secp256k1_ec_pubkey_serialize failed";
+  // }
 }
 
 // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki#serialization-format
 std::string HDKey::Serialize(ExtendedKeyVersion version,
                              base::span<const uint8_t> key) const {
-  // version(4) || depth(1) || parent_fingerprint(4) || index(4) || chain(32) ||
-  // key(32 or 33)
-  SecureVector buf;
+  // // version(4) || depth(1) || parent_fingerprint(4) || index(4) || chain(32) ||
+  // // key(32 or 33)
+  // SecureVector buf;
 
-  buf.reserve(kSerializationLength);
+  // buf.reserve(kSerializationLength);
 
-  uint32_t version_uint32 = static_cast<uint32_t>(version);
+  // uint32_t version_uint32 = static_cast<uint32_t>(version);
 
-  buf.push_back((version_uint32 >> 24) & 0xFF);
-  buf.push_back((version_uint32 >> 16) & 0xFF);
-  buf.push_back((version_uint32 >> 8) & 0xFF);
-  buf.push_back((version_uint32 >> 0) & 0xFF);
+  // buf.push_back((version_uint32 >> 24) & 0xFF);
+  // buf.push_back((version_uint32 >> 16) & 0xFF);
+  // buf.push_back((version_uint32 >> 8) & 0xFF);
+  // buf.push_back((version_uint32 >> 0) & 0xFF);
 
-  buf.push_back(depth_);
+  // buf.push_back(depth_);
 
-  buf.push_back((parent_fingerprint_ >> 24) & 0xFF);
-  buf.push_back((parent_fingerprint_ >> 16) & 0xFF);
-  buf.push_back((parent_fingerprint_ >> 8) & 0xFF);
-  buf.push_back(parent_fingerprint_ & 0xFF);
+  // buf.push_back((parent_fingerprint_ >> 24) & 0xFF);
+  // buf.push_back((parent_fingerprint_ >> 16) & 0xFF);
+  // buf.push_back((parent_fingerprint_ >> 8) & 0xFF);
+  // buf.push_back(parent_fingerprint_ & 0xFF);
 
-  buf.push_back((index_ >> 24) & 0xFF);
-  buf.push_back((index_ >> 16) & 0xFF);
-  buf.push_back((index_ >> 8) & 0xFF);
-  buf.push_back(index_ & 0xFF);
+  // buf.push_back((index_ >> 24) & 0xFF);
+  // buf.push_back((index_ >> 16) & 0xFF);
+  // buf.push_back((index_ >> 8) & 0xFF);
+  // buf.push_back(index_ & 0xFF);
 
-  buf.insert(buf.end(), chain_code_.begin(), chain_code_.end());
-  if (key.size() == 32) {
-    DCHECK(version == ExtendedKeyVersion::kXprv ||
-           version == ExtendedKeyVersion::kYprv ||
-           version == ExtendedKeyVersion::kZprv);
-    // 32-bytes private key is padded with a zero byte.
-    buf.insert(buf.end(), 0);
-  } else {
-    DCHECK(version == ExtendedKeyVersion::kXpub ||
-           version == ExtendedKeyVersion::kYpub ||
-           version == ExtendedKeyVersion::kZpub);
-    DCHECK_EQ(key.size(), 33u);
-  }
-  buf.insert(buf.end(), key.begin(), key.end());
+  // buf.insert(buf.end(), chain_code_.begin(), chain_code_.end());
+  // if (key.size() == 32) {
+  //   DCHECK(version == ExtendedKeyVersion::kXprv ||
+  //          version == ExtendedKeyVersion::kYprv ||
+  //          version == ExtendedKeyVersion::kZprv);
+  //   // 32-bytes private key is padded with a zero byte.
+  //   buf.insert(buf.end(), 0);
+  // } else {
+  //   DCHECK(version == ExtendedKeyVersion::kXpub ||
+  //          version == ExtendedKeyVersion::kYpub ||
+  //          version == ExtendedKeyVersion::kZpub);
+  //   DCHECK_EQ(key.size(), 33u);
+  // }
+  // buf.insert(buf.end(), key.begin(), key.end());
 
-  DCHECK(buf.size() == kSerializationLength);
-  return EncodeBase58Check(buf);
+  // DCHECK(buf.size() == kSerializationLength);
+  // return EncodeBase58Check(buf);
+
+  return std::string();
 }
 
 }  // namespace brave_wallet

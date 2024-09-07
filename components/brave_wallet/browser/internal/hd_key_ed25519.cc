@@ -12,7 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "brave/third_party/bitcoin-core/src/src/base58.h"
+//#include "brave/third_party/bitcoin-core/src/src/base58.h"
 
 namespace brave_wallet {
 namespace {
@@ -123,13 +123,15 @@ std::vector<uint8_t> HDKeyEd25519::GetPublicKeyBytes() const {
 }
 
 std::string HDKeyEd25519::GetBase58EncodedPublicKey() const {
-  auto public_key = private_key_->unwrap().public_key_raw();
-  return EncodeBase58(public_key);
+  // auto public_key = private_key_->unwrap().public_key_raw();
+  // return EncodeBase58(public_key);
+  return std::string();
 }
 
 std::string HDKeyEd25519::GetBase58EncodedKeypair() const {
-  auto keypair = private_key_->unwrap().keypair_raw();
-  return EncodeBase58(keypair);
+  // auto keypair = private_key_->unwrap().keypair_raw();
+  // return EncodeBase58(keypair);
+  return std::string();
 }
 
 }  // namespace brave_wallet

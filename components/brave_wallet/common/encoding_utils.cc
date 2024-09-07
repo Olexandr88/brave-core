@@ -6,7 +6,7 @@
 #include "brave/components/brave_wallet/common/encoding_utils.h"
 
 #include "brave/components/brave_wallet/common/hash_utils.h"
-#include "brave/third_party/bitcoin-core/src/src/base58.h"
+//#include "brave/third_party/bitcoin-core/src/src/base58.h"
 
 namespace brave_wallet {
 
@@ -22,18 +22,21 @@ bool Base58Decode(const std::string& str,
                   std::vector<uint8_t>* ret,
                   int len,
                   bool strict) {
-  DCHECK(ret);
-  ret->clear();
-  return DecodeBase58(str, *ret, len) &&
-         (!strict || static_cast<int>(ret->size()) == len);
+return false;
+  // DCHECK(ret);
+  // ret->clear();
+  // return DecodeBase58(str, *ret, len) &&
+  //        (!strict || static_cast<int>(ret->size()) == len);
 }
 
 std::string Base58Encode(const std::vector<uint8_t>& bytes) {
-  return EncodeBase58(bytes);
+  //return EncodeBase58(bytes);
+  return std::string();
 }
 
 std::string Base58Encode(base::span<const uint8_t> bytes) {
-  return EncodeBase58(bytes);
+  //return EncodeBase58(bytes);
+  return std::string();
 }
 
 }  // namespace brave_wallet
