@@ -299,6 +299,7 @@ class ConversationDriver : public ModelService::Observer {
                                   std::string invalidation_token = "");
   void OnTextEmbedderInitialized(
       const std::string& input,
+      int64_t current_navigation_id,
       EngineConsumer::GenerationDataCallback data_received_callback,
       EngineConsumer::GenerationCompletedCallback data_completed_callback,
       std::string page_content,

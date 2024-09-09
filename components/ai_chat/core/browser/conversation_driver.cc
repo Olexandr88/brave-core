@@ -1290,13 +1290,15 @@ void ConversationDriver::PerformAssistantGeneration(
                          std::move(data_received_callback),
                          std::move(data_completed_callback), page_content,
                          is_video));
-      UpdateOrCreateLastAssistantEntry(
-          mojom::ConversationEntryEvent::NewPageContentRefineEvent(
-              mojom::PageContentRefineEvent::New()));
+      if (current_navigation_id == current_navigation_id_) {
+        UpdateOrCreateLastAssistantEntry(
+            mojom::ConversationEntryEvent::NewPageContentRefineEvent(
+                mojom::PageContentRefineEvent::New()));
+      }
     } else {
       text_embedder_->Initialize(base::BindOnce(
           &ConversationDriver::OnTextEmbedderInitialized,
-          weak_ptr_factory_.GetWeakPtr(), input,
+          weak_ptr_factory_.GetWeakPtr(), input, current_navigation_id,
           std::move(data_received_callback), std::move(data_completed_callback),
           std::move(page_content), is_video));
     }
@@ -1309,6 +1311,7 @@ void ConversationDriver::PerformAssistantGeneration(
 
 void ConversationDriver::OnTextEmbedderInitialized(
     const std::string& input,
+    int64_t current_navigation_id,
     EngineConsumer::GenerationDataCallback data_received_callback,
     EngineConsumer::GenerationCompletedCallback data_completed_callback,
     std::string page_content,
@@ -1322,9 +1325,11 @@ void ConversationDriver::OnTextEmbedderInitialized(
                        std::move(data_received_callback),
                        std::move(data_completed_callback), page_content,
                        is_video));
-    UpdateOrCreateLastAssistantEntry(
-        mojom::ConversationEntryEvent::NewPageContentRefineEvent(
-            mojom::PageContentRefineEvent::New()));
+    if (current_navigation_id == current_navigation_id_) {
+      UpdateOrCreateLastAssistantEntry(
+          mojom::ConversationEntryEvent::NewPageContentRefineEvent(
+              mojom::PageContentRefineEvent::New()));
+    }
   } else {
     VLOG(1) << "Failed to initialize TextEmbedder";
     engine_->GenerateAssistantResponse(
