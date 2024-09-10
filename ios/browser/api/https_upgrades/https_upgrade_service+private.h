@@ -10,7 +10,6 @@
 
 #include "brave/ios/browser/api/https_upgrades/https_upgrade_service.h"
 
-class ChromeBrowserState;
 class HttpsUpgradeService;
 
 NS_ASSUME_NONNULL_BEGIN
