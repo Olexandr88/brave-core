@@ -27,6 +27,7 @@ type Props = Pick<AIChatContext,
   | 'isToolsMenuOpen'
   | 'setIsToolsMenuOpen'
   | 'isMobile'
+  | 'hasInitialHistory'
   | 'shouldDisableUserInput'
   | 'hasAcceptedAgreement'>
 
@@ -41,6 +42,7 @@ function InputBox(props: InputBoxProps) {
   }
 
   const handleSubmit = () => {
+    querySubmitted.current = true
     props.context.submitInputTextToAPI()
   }
 
@@ -76,9 +78,20 @@ function InputBox(props: InputBoxProps) {
     }
   }
 
+  const querySubmitted = React.useRef(false)
+
   const maybeAutofocus = (node: HTMLTextAreaElement | null) => {
-    if (node && props.context.selectedActionType) {
+    if (!node) {
+      return
+    }
+
+    if (props.context.selectedActionType) {
       node.focus()
+    }
+    if (props.context.isMobile && props.context.hasAcceptedAgreement &&
+      !props.context.hasInitialHistory && !querySubmitted.current) {
+        node.focus()
+        getPageHandlerInstance().pageHandler.handleShowSoftKeyboard()
     }
   }
 

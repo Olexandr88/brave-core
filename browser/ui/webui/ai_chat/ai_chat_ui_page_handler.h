@@ -64,6 +64,7 @@ class AIChatUIPageHandler : public ai_chat::mojom::PageHandler,
       mojom::ActionType action_type) override;
   void SubmitSummarizationRequest() override;
   void HandleVoiceRecognition() override;
+  void HandleShowSoftKeyboard() override;
   void GetConversationHistory(GetConversationHistoryCallback callback) override;
   void MarkAgreementAccepted() override;
   void GetSuggestedQuestions(GetSuggestedQuestionsCallback callback) override;

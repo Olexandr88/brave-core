@@ -10,6 +10,7 @@
 #include "brave/browser/ui/side_panel/ai_chat/ai_chat_side_panel_utils.h"
 #include "brave/browser/ui/webui/ai_chat/ai_chat_ui_page_handler.h"
 #include "brave/browser/ui/webui/brave_webui_source.h"
+#include "brave/components/ai_chat/content/browser/ai_chat_tab_helper.h"
 #include "brave/components/ai_chat/core/browser/constants.h"
 #include "brave/components/ai_chat/core/browser/utils.h"
 #include "brave/components/ai_chat/core/common/pref_names.h"
@@ -93,6 +94,11 @@ AIChatUI::AIChatUI(content::WebUI* web_ui)
 #endif
 
   untrusted_source->AddBoolean("isMobile", kIsMobile);
+  ai_chat::AIChatTabHelper* active_chat_tab_helper =
+      ai_chat::AIChatTabHelper::FromWebContents(GetChatWebContents());
+  untrusted_source->AddBoolean(
+      "hasInitialHistory",
+      active_chat_tab_helper->GetVisibleConversationHistory().size() != 0);
 
   untrusted_source->AddBoolean(
       "hasUserDismissedPremiumPrompt",
@@ -118,21 +124,13 @@ AIChatUI::AIChatUI(content::WebUI* web_ui)
 
 AIChatUI::~AIChatUI() = default;
 
-void AIChatUI::BindInterface(
-    mojo::PendingReceiver<ai_chat::mojom::PageHandler> receiver) {
-  // We call ShowUI() before creating the PageHandler object so that
-  // the WebContents is added to a Browser which we can get a reference
-  // to and provide to the PageHandler.
-  if (embedder_) {
-    embedder_->ShowUI();
-  }
-
+content::WebContents* AIChatUI::GetChatWebContents() {
   content::WebContents* web_contents = nullptr;
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser =
       ai_chat::GetBrowserForWebContents(web_ui()->GetWebContents());
   if (!browser) {
-    return;
+    return web_contents;
   }
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -144,8 +142,22 @@ void AIChatUI::BindInterface(
   if (web_contents == web_ui()->GetWebContents()) {
     web_contents = nullptr;
   }
+
+  return web_contents;
+}
+
+void AIChatUI::BindInterface(
+    mojo::PendingReceiver<ai_chat::mojom::PageHandler> receiver) {
+  // We call ShowUI() before creating the PageHandler object so that
+  // the WebContents is added to a Browser which we can get a reference
+  // to and provide to the PageHandler.
+  if (embedder_) {
+    embedder_->ShowUI();
+  }
+
   page_handler_ = std::make_unique<ai_chat::AIChatUIPageHandler>(
-      web_ui()->GetWebContents(), web_contents, profile_, std::move(receiver));
+      web_ui()->GetWebContents(), GetChatWebContents(), profile_,
+      std::move(receiver));
 }
 
 bool UntrustedChatUIConfig::IsWebUIEnabled(

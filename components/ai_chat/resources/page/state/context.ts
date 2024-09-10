@@ -40,6 +40,7 @@ export interface AIChatContext extends CharCountContext {
   showAgreementModal: boolean
   shouldSendPageContents: boolean
   isMobile: boolean
+  hasInitialHistory: boolean
   inputText: string
   selectedActionType: mojom.ActionType | undefined
   isToolsMenuOpen: boolean
@@ -85,6 +86,7 @@ export const defaultContext: AIChatContext = {
   showAgreementModal: false,
   shouldSendPageContents: true,
   isMobile: false,
+  hasInitialHistory: false,
   inputText: '',
   selectedActionType: undefined,
   isToolsMenuOpen: false,

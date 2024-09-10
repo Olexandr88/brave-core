@@ -172,6 +172,12 @@ void AIChatUIPageHandler::HandleVoiceRecognition() {
 #endif
 }
 
+void AIChatUIPageHandler::HandleShowSoftKeyboard() {
+#if BUILDFLAG(IS_ANDROID)
+  ai_chat::HandleShowSoftKeyboard(web_contents());
+#endif
+}
+
 void AIChatUIPageHandler::GetConversationHistory(
     GetConversationHistoryCallback callback) {
   if (!active_chat_tab_helper_) {

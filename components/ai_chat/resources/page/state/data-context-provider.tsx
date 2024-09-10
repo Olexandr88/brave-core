@@ -336,6 +336,8 @@ function DataContextProvider(props: DataContextProviderProps) {
   }
 
   const isMobile = React.useMemo(() => loadTimeData.getBoolean('isMobile'), [])
+  const hasInitialHistory = React.useMemo(() =>
+    loadTimeData.getBoolean('hasInitialHistory'), [])
 
   React.useEffect(() => {
     initialiseForTargetTab()
@@ -405,6 +407,7 @@ function DataContextProvider(props: DataContextProviderProps) {
     showAgreementModal,
     shouldSendPageContents: shouldSendPageContents && siteInfo?.isContentAssociationPossible,
     isMobile,
+    hasInitialHistory,
     inputText,
     isCharLimitExceeded,
     isCharLimitApproaching,

@@ -123,6 +123,7 @@ export class MockPageHandlerRemote implements Public<mojom.PageHandlerRemote> {
   submitHumanConversationEntry() {}
   submitHumanConversationEntryWithAction() {}
   handleVoiceRecognition() {}
+  handleShowSoftKeyboard() {}
   submitSummarizationRequest() {}
   markAgreementAccepted() {}
   openBraveLeoSettings() {}
