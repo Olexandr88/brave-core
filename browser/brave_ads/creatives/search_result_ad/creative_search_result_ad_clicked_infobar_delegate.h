@@ -32,7 +32,7 @@ class CreativeSearchResultAdClickedInfoBarDelegate
  private:
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  const gfx::VectorIcon& GetVectorIcon() const override;
+  ui::ImageModel GetIcon() const override;
   std::u16string GetMessageText() const override;
   int GetButtons() const override;
   std::u16string GetLinkText() const override;

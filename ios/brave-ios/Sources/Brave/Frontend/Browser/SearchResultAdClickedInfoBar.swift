@@ -9,11 +9,11 @@ import SnapKit
 import SwiftUI
 import UIKit
 
-struct SearchResultAdClickedInfoBarUX {
+private struct SearchResultAdClickedInfoBarUX {
   static let toastHeight: CGFloat = 100.0
   static let toastPadding: CGFloat = 10.0
   static let toastCloseButtonWidth: CGFloat = 20.0
-  static let toastLabelFont = UIFont.systemFont(ofSize: 15, weight: .semibold)
+  static let toastLabelFont = UIFont.preferredFont(forTextStyle: .subheadline)
   static let toastBackgroundColor = UIColor(braveSystemName: .schemesOnPrimaryFixed)
   static let learnMoreUrl = "https://support.brave.com/hc/en-us/articles/360026361072-Brave-Ads-FAQ"
 }
@@ -29,22 +29,23 @@ class SearchResultAdClickedInfoBar: Toast, UITextViewDelegate {
     self.tapDismissalMode = .outsideTap
 
     self.clipsToBounds = true
-    self.addSubview(
-      createView(
-        Strings.searchResultAdsClickedInfoBarTitle + " "
-      )
+
+    toastView.backgroundColor = SearchResultAdClickedInfoBarUX.toastBackgroundColor
+
+    let toastContent = createToastContent(
+      Strings.searchResultAdClickedInfoBarTitle + " "
     )
-
-    self.toastView.backgroundColor = SearchResultAdClickedInfoBarUX.toastBackgroundColor
-
-    self.toastView.snp.makeConstraints { make in
-      make.left.right.height.equalTo(self)
-      self.animationConstraint =
-        make.top.equalTo(self).offset(SearchResultAdClickedInfoBarUX.toastHeight).constraint
+    toastView.addSubview(toastContent)
+    toastContent.snp.makeConstraints { make in
+      make.centerX.equalTo(toastView)
+      make.centerY.equalTo(toastView)
+      make.edges.equalTo(toastView).inset(SearchResultAdClickedInfoBarUX.toastPadding)
     }
 
-    self.snp.makeConstraints { make in
-      make.height.equalTo(SearchResultAdClickedInfoBarUX.toastHeight)
+    addSubview(toastView)
+    toastView.snp.makeConstraints { make in
+      make.left.right.height.equalTo(self)
+      self.animationConstraint = make.top.equalTo(self).offset(SimpleToastUX.toastHeight).constraint
     }
   }
 
@@ -52,7 +53,7 @@ class SearchResultAdClickedInfoBar: Toast, UITextViewDelegate {
     fatalError("init(coder:) has not been implemented")
   }
 
-  fileprivate func createView(
+  fileprivate func createToastContent(
     _ labelText: String
   ) -> UIView {
     let horizontalStackView = UIStackView()
@@ -70,7 +71,7 @@ class SearchResultAdClickedInfoBar: Toast, UITextViewDelegate {
     label.isSelectable = true
     label.delegate = self
 
-    let learnMoreText = Strings.learnMore.withNonBreakingSpace
+    let learnMoreOptOutChoicesText = Strings.searchResultAdClickedLearnMoreOptOutChoicesLabel
     let attributes: [NSAttributedString.Key: Any] = [
       .foregroundColor: UIColor.white,
       .font: SearchResultAdClickedInfoBarUX.toastLabelFont,
@@ -88,52 +89,34 @@ class SearchResultAdClickedInfoBar: Toast, UITextViewDelegate {
       attributes: attributes
     )
     let nsLinkAttributedString = NSMutableAttributedString(
-      string: learnMoreText,
+      string: learnMoreOptOutChoicesText,
       attributes: linkAttributes
     )
 
     if let url = URL(string: SearchResultAdClickedInfoBarUX.learnMoreUrl) {
-      let learnMoreRange = NSRange(location: 0, length: learnMoreText.count)
-      nsLinkAttributedString.addAttribute(.link, value: url, range: learnMoreRange)
+      let linkTextRange = NSRange(location: 0, length: learnMoreOptOutChoicesText.count)
+      nsLinkAttributedString.addAttribute(.link, value: url, range: linkTextRange)
       nsLabelAttributedString.append(nsLinkAttributedString)
       label.isUserInteractionEnabled = true
     }
     label.attributedText = nsLabelAttributedString
-
     horizontalStackView.addArrangedSubview(label)
 
-    if let buttonImage = UIImage(braveSystemNamed: "leo.close") {
-      let button = UIButton()
-      button.setImage(buttonImage, for: .normal)
-      button.imageView?.contentMode = .scaleAspectFit
-      button.imageView?.tintColor = .white
-      button.imageView?.preferredSymbolConfiguration = .init(
-        font: .preferredFont(for: .title3, weight: .regular),
-        scale: .small
-      )
-
-      button.imageView?.snp.makeConstraints {
-        $0.width.equalTo(SearchResultAdClickedInfoBarUX.toastCloseButtonWidth)
-      }
-
-      button.addGestureRecognizer(
-        UITapGestureRecognizer(target: self, action: #selector(buttonPressed))
-      )
-
-      horizontalStackView.addArrangedSubview(button)
+    let button = UIButton()
+    button.setImage(UIImage(braveSystemNamed: "leo.close")!, for: .normal)
+    button.imageView?.contentMode = .scaleAspectFit
+    button.imageView?.tintColor = .white
+    button.imageView?.preferredSymbolConfiguration = .init(
+      font: .preferredFont(for: .title3, weight: .regular),
+      scale: .small
+    )
+    button.snp.makeConstraints {
+      $0.width.equalTo(SearchResultAdClickedInfoBarUX.toastCloseButtonWidth)
     }
+    button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
+    horizontalStackView.addArrangedSubview(button)
 
-    toastView.addSubview(horizontalStackView)
-
-    horizontalStackView.snp.makeConstraints { make in
-      make.centerX.equalTo(toastView)
-      make.centerY.equalTo(toastView)
-      make.width.equalTo(toastView.snp.width).offset(
-        -2 * SearchResultAdClickedInfoBarUX.toastPadding
-      )
-    }
-
-    return toastView
+    return horizontalStackView
   }
 
   func textView(
@@ -152,20 +135,5 @@ class SearchResultAdClickedInfoBar: Toast, UITextViewDelegate {
 
   @objc func buttonPressed(_ gestureRecognizer: UIGestureRecognizer) {
     dismiss(true)
-  }
-
-  override func showToast(
-    viewController: UIViewController? = nil,
-    delay: DispatchTimeInterval = SimpleToastUX.toastDelayBefore,
-    duration: DispatchTimeInterval?,
-    makeConstraints: @escaping (ConstraintMaker) -> Void,
-    completion: (() -> Void)? = nil
-  ) {
-    super.showToast(
-      viewController: viewController,
-      delay: delay,
-      duration: duration,
-      makeConstraints: makeConstraints
-    )
   }
 }
