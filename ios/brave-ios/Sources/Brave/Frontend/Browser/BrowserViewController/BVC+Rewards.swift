@@ -162,9 +162,14 @@ extension Tab {
       adsRewardsLog.warning("No favicon found in \(self) to report to rewards panel")
     }
 
+    let kClientErrorHttpResponseStatusCodeClass = 4
+    let kServerErrorHttpResponseStatusCodeClass = 5
+    let responseStatusCodeClass = response.statusCode / 100
+
     if rewardsReportingState.wasRestored
       || !rewardsReportingState.isNewNavigation
-      || rewardsReportingState.isErrorPage
+      || responseStatusCodeClass == kClientErrorHttpResponseStatusCodeClass
+      || responseStatusCodeClass == kServerErrorHttpResponseStatusCodeClass
     {
       return
     }

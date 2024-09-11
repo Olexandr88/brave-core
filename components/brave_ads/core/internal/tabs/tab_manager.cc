@@ -206,7 +206,7 @@ void TabManager::OnNotifyTabDidChange(const int32_t tab_id,
                                       const std::vector<GURL>& redirect_chain,
                                       const bool is_new_navigation,
                                       const bool is_restoring,
-                                      const bool is_error_page,
+                                      const int http_status_code,
                                       const bool is_visible) {
   CHECK(!redirect_chain.empty());
 
@@ -224,7 +224,7 @@ void TabManager::OnNotifyTabDidChange(const int32_t tab_id,
   // Update the tab.
   tab.is_visible = is_visible;
   tab.redirect_chain = redirect_chain;
-  tab.is_error_page = is_error_page;
+  tab.http_status_code = http_status_code;
 
   if (is_visible) {
     // Update the visible tab id.

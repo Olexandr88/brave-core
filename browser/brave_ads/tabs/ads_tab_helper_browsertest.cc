@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -185,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(AdsTabHelperTest, NotifyTabDidChange) {
       ads_service(),
       NotifyTabDidChange(/*tab_id=*/_, /*redirect_chain=*/_,
                          /*is_new_navigation=*/true, /*is_restoring=*/false,
-                         /*is_error_page_=*/false, /*is_visible=*/_))
+                         net::HTTP_OK, /*is_visible=*/_))
       .WillRepeatedly(RunClosure(tab_did_change_run_loop.QuitClosure()));
 
   const GURL url = https_server().GetURL(kUrlDomain, kUrlPath);
@@ -201,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(AdsTabHelperTest,
   EXPECT_CALL(ads_service(),
               NotifyTabDidChange(/*tab_id=*/_, /*redirect_chain=*/_,
                                  /*is_new_navigation=*/_, /*is_restoring=*/_,
-                                 /*is_error_page_=*/_, /*is_visible=*/_))
+                                 /*http_status_code=*/_, /*is_visible=*/_))
       .Times(testing::AnyNumber());
 
   base::RunLoop tab_did_change_run_loop;
@@ -209,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(AdsTabHelperTest,
       ads_service(),
       NotifyTabDidChange(/*tab_id=*/_, /*redirect_chain=*/_,
                          /*is_new_navigation=*/true, /*is_restoring=*/false,
-                         /*is_error_page_=*/true, /*is_visible=*/_))
+                         net::HTTP_NOT_FOUND, /*is_visible=*/_))
       .WillRepeatedly(RunClosure(tab_did_change_run_loop.QuitClosure()));
 
   const GURL url = https_server().GetURL(kUrlDomain, k500ErrorPagePath);
@@ -225,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(AdsTabHelperTest,
   EXPECT_CALL(ads_service(),
               NotifyTabDidChange(/*tab_id=*/_, /*redirect_chain=*/_,
                                  /*is_new_navigation=*/_, /*is_restoring=*/_,
-                                 /*is_error_page_=*/_, /*is_visible=*/_))
+                                 /*http_status_code=*/_, /*is_visible=*/_))
       .Times(testing::AnyNumber());
 
   base::RunLoop tab_did_change_run_loop;
@@ -233,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(AdsTabHelperTest,
       ads_service(),
       NotifyTabDidChange(/*tab_id=*/_, /*redirect_chain=*/_,
                          /*is_new_navigation=*/true, /*is_restoring=*/false,
-                         /*is_error_page_=*/true, /*is_visible=*/_))
+                         net::HTTP_NOT_FOUND, /*is_visible=*/_))
       .WillRepeatedly(RunClosure(tab_did_change_run_loop.QuitClosure()));
 
   const GURL url = https_server().GetURL(kUrlDomain, k404ErrorPagePath);

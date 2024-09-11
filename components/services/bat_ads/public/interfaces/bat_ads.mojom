@@ -46,7 +46,7 @@ interface BatAdsClientNotifier {
                      array<url.mojom.Url> redirect_chain,
                      bool is_new_navigation,
                      bool is_restoring,
-                     bool is_error_page,
+                     int32 http_status_code,
                      bool is_visible);
   NotifyDidCloseTab(int32 tab_id);
 

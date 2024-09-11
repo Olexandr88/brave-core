@@ -171,18 +171,18 @@ void AdsClientNotifier::NotifyTabDidChange(
     const std::vector<GURL>& redirect_chain,
     const bool is_new_navigation,
     const bool is_restoring,
-    const bool is_error_page,
+    const int http_status_code,
     const bool is_visible) {
   if (should_queue_) {
-    return queue_->Add(base::BindOnce(&AdsClientNotifier::NotifyTabDidChange,
-                                      weak_factory_.GetWeakPtr(), tab_id,
-                                      redirect_chain, is_new_navigation,
-                                      is_restoring, is_error_page, is_visible));
+    return queue_->Add(base::BindOnce(
+        &AdsClientNotifier::NotifyTabDidChange, weak_factory_.GetWeakPtr(),
+        tab_id, redirect_chain, is_new_navigation, is_restoring,
+        http_status_code, is_visible));
   }
 
   for (auto& observer : observers_) {
     observer.OnNotifyTabDidChange(tab_id, redirect_chain, is_new_navigation,
-                                  is_restoring, is_error_page, is_visible);
+                                  is_restoring, http_status_code, is_visible);
   }
 }
 

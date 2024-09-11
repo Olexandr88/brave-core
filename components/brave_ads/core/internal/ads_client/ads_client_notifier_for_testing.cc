@@ -91,11 +91,11 @@ void AdsClientNotifierForTesting::NotifyTabDidChange(
     const std::vector<GURL>& redirect_chain,
     const bool is_new_navigation,
     const bool is_restoring,
-    const bool is_error_page,
+    const int http_status_code,
     const bool is_visible) {
   AdsClientNotifier::NotifyTabDidChange(tab_id, redirect_chain,
                                         is_new_navigation, is_restoring,
-                                        is_error_page, is_visible);
+                                        http_status_code, is_visible);
 
   RunTaskEnvironmentUntilIdle();
 }

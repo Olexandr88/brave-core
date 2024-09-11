@@ -244,7 +244,7 @@ public class BraveRewards: PreferencesObserver {
         redirectChain: tab.redirectChain,
         isNewNavigation: tab.rewardsReportingState.isNewNavigation,
         isRestoring: tab.rewardsReportingState.wasRestored,
-        isErrorPage: tab.rewardsReportingState.isErrorPage,
+        httpStatusCode: tab.rewardsReportingState.httpStatusCode,
         isSelected: isSelected
       )
     }

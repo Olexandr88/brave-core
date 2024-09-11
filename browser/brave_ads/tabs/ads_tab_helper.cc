@@ -31,8 +31,8 @@ namespace brave_ads {
 
 namespace {
 
-constexpr int kHtmlClientErrorResponseCodeClass = 4;
-constexpr int kHtmlServerErrorResponseCodeClass = 5;
+constexpr int kClientErrorHttpResponseStatusCodeClass = 4;
+constexpr int kServerErrorHttpResponseStatusCodeClass = 5;
 
 constexpr char16_t kSerializeDocumentToStringJavaScript[] =
     u"new XMLSerializer().serializeToString(document)";
@@ -146,18 +146,21 @@ bool AdsTabHelper::IsNewNavigation(
       navigation_handle->GetPageTransition());
 }
 
-bool AdsTabHelper::IsErrorPage(content::NavigationHandle* navigation_handle) {
+int AdsTabHelper::HttpStatusCode(content::NavigationHandle* navigation_handle) {
   CHECK(navigation_handle);
 
-  // Only consider client and server error responses as error pages.
   if (const net::HttpResponseHeaders* const response_headers =
           navigation_handle->GetResponseHeaders()) {
-    const int response_code_class = response_headers->response_code() / 100;
-    return response_code_class == kHtmlClientErrorResponseCodeClass ||
-           response_code_class == kHtmlServerErrorResponseCodeClass;
+    return response_headers->response_code();
   }
 
-  return false;
+  return -1;
+}
+
+bool AdsTabHelper::IsErrorPage(const int http_status_code) const {
+  const int http_status_code_class = http_status_code / 100;
+  return http_status_code_class == kClientErrorHttpResponseStatusCodeClass ||
+         http_status_code_class == kServerErrorHttpResponseStatusCodeClass;
 }
 
 void AdsTabHelper::ProcessNavigation() {
@@ -181,7 +184,7 @@ void AdsTabHelper::ResetNavigationState() {
   redirect_chain_.clear();
   redirect_chain_.shrink_to_fit();
 
-  is_error_page_ = false;
+  http_status_code_ = -1;
 
   media_players_.clear();
 }
@@ -238,7 +241,7 @@ void AdsTabHelper::MaybeNotifyTabDidChange() {
 
   ads_service_->NotifyTabDidChange(/*tab_id=*/session_id_.id(), redirect_chain_,
                                    is_new_navigation_, was_restored_,
-                                   is_error_page_, IsVisible());
+                                   http_status_code_, IsVisible());
 }
 
 bool AdsTabHelper::ShouldNotifyTabContentDidChange() const {
@@ -246,7 +249,7 @@ bool AdsTabHelper::ShouldNotifyTabContentDidChange() const {
   // tab was restored, was a previously committed navigation, the web contents
   // are still loading, or an error page was displayed.
   return ads_service_ && !was_restored_ && is_new_navigation_ &&
-         !redirect_chain_.empty() && !is_error_page_;
+         !redirect_chain_.empty() && !IsErrorPage(http_status_code_);
 }
 
 void AdsTabHelper::MaybeNotifyTabHtmlContentDidChange() {
@@ -354,7 +357,7 @@ void AdsTabHelper::DidFinishNavigation(
 
   redirect_chain_ = navigation_handle->GetRedirectChain();
 
-  is_error_page_ = IsErrorPage(navigation_handle);
+  http_status_code_ = HttpStatusCode(navigation_handle);
 
   MaybeNotifyUserGestureEventTriggered(navigation_handle);
 

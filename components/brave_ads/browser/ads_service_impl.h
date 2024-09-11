@@ -290,7 +290,7 @@ class AdsServiceImpl final : public AdsService,
                           const std::vector<GURL>& redirect_chain,
                           bool is_new_navigation,
                           bool is_restoring,
-                          bool is_error_page,
+                          int http_status_code,
                           bool is_visible) override;
   void NotifyDidCloseTab(int32_t tab_id) override;
 

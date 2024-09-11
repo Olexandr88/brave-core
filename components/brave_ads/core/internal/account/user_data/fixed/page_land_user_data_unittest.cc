@@ -9,6 +9,7 @@
 #include "brave/components/brave_ads/core/internal/common/test/test_base.h"
 #include "brave/components/brave_ads/core/internal/settings/settings_test_util.h"
 #include "brave/components/brave_ads/core/internal/tabs/tab_info.h"
+#include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
 // npm run test -- brave_unit_tests --filter=BraveAds*
@@ -20,12 +21,11 @@ class BraveAdsPageLandUserDataTest : public test::TestBase {};
 TEST_F(BraveAdsPageLandUserDataTest,
        BuildPageLandUserDataForHttpResponseStatusErrorPage) {
   // Act
-  const base::Value::Dict user_data = BuildPageLandUserData(
-      TabInfo{/*id=*/1,
-              /*is_visible=*/true,
-              /*redirect_chain=*/{GURL("https://brave.com")},
-              /*is_error_page=*/true,
-              /*is_playing_media=*/false});
+  const base::Value::Dict user_data = BuildPageLandUserData(TabInfo{
+      /*id=*/1,
+      /*is_visible=*/true,
+      /*redirect_chain=*/{GURL("https://brave.com")}, net::HTTP_NOT_FOUND,
+      /*is_playing_media=*/false});
 
   // Assert
   EXPECT_EQ(base::test::ParseJsonDict(
@@ -42,9 +42,9 @@ TEST_F(BraveAdsPageLandUserDataTest,
   const base::Value::Dict user_data = BuildPageLandUserData(
       TabInfo{/*id=*/1,
               /*is_visible=*/true,
-              /*redirect_chain=*/{GURL("https://brave.com")},
-              /*is_error_page=*/false,
-              /*is_playing_media=*/false});
+              /*redirect_chain=*/{GURL("https://brave.com")}, net::HTTP_OK,
+              /*is_playing_media=*/
+              false});
 
   // Assert
   EXPECT_THAT(user_data, ::testing::IsEmpty());
@@ -57,12 +57,11 @@ TEST_F(
   test::DisableBraveRewards();
 
   // Act
-  const base::Value::Dict user_data = BuildPageLandUserData(
-      TabInfo{/*id=*/1,
-              /*is_visible=*/true,
-              /*redirect_chain=*/{GURL("https://brave.com")},
-              /*is_error_page=*/true,
-              /*is_playing_media=*/false});
+  const base::Value::Dict user_data = BuildPageLandUserData(TabInfo{
+      /*id=*/1,
+      /*is_visible=*/true,
+      /*redirect_chain=*/{GURL("https://brave.com")}, net::HTTP_NOT_FOUND,
+      /*is_playing_media=*/false});
 
   // Assert
   EXPECT_THAT(user_data, ::testing::IsEmpty());
