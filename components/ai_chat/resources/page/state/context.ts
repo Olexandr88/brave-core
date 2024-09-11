@@ -63,6 +63,7 @@ export interface AIChatContext extends CharCountContext {
   resetSelectedActionType: () => void
   handleActionTypeClick: (actionType: mojom.ActionType) => void
   setIsToolsMenuOpen: (isOpen: boolean) => void
+  handleShowSoftKeyboard?: () => unknown
 }
 
 export const defaultContext: AIChatContext = {
@@ -109,6 +110,7 @@ export const defaultContext: AIChatContext = {
   resetSelectedActionType: () => {},
   handleActionTypeClick: () => {},
   setIsToolsMenuOpen: () => {},
+  handleShowSoftKeyboard: () => {},
   ...defaultCharCountContext,
 }
 

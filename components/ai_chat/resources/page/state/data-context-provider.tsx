@@ -61,6 +61,8 @@ export function useCharCountInfo(inputText: string) {
   }
 }
 
+const hasInitialHistory = loadTimeData.getBoolean('hasInitialHistory')
+
 interface DataContextProviderProps {
   children: React.ReactNode
   store?: Partial<AIChatContext>
@@ -319,6 +321,10 @@ function DataContextProvider(props: DataContextProviderProps) {
     resetSelectedActionType()
   }
 
+  const handleShowSoftKeyboard = () => {
+    getPageHandlerInstance().pageHandler.handleShowSoftKeyboard()
+  }
+
   const initialiseForTargetTab = async () => {
     // Replace state from backend
     // TODO(petemill): Perhaps we need a simple GetState mojom function
@@ -336,8 +342,6 @@ function DataContextProvider(props: DataContextProviderProps) {
   }
 
   const isMobile = React.useMemo(() => loadTimeData.getBoolean('isMobile'), [])
-  const hasInitialHistory = React.useMemo(() =>
-    loadTimeData.getBoolean('hasInitialHistory'), [])
 
   React.useEffect(() => {
     initialiseForTargetTab()
@@ -433,6 +437,7 @@ function DataContextProvider(props: DataContextProviderProps) {
     resetSelectedActionType,
     handleActionTypeClick,
     setIsToolsMenuOpen,
+    handleShowSoftKeyboard,
     ...props.store,
   }
 
