@@ -94,11 +94,16 @@ AIChatUI::AIChatUI(content::WebUI* web_ui)
 #endif
 
   untrusted_source->AddBoolean("isMobile", kIsMobile);
-  ai_chat::AIChatTabHelper* active_chat_tab_helper =
-      ai_chat::AIChatTabHelper::FromWebContents(GetChatWebContents());
-  untrusted_source->AddBoolean(
-      "hasInitialHistory",
-      active_chat_tab_helper->GetVisibleConversationHistory().size() != 0);
+  content::WebContents* chat_web_contents = GetChatWebContents();
+  size_t visible_conversation_history_size = 0;
+  if (chat_web_contents) {
+    ai_chat::AIChatTabHelper* active_chat_tab_helper =
+        ai_chat::AIChatTabHelper::FromWebContents(chat_web_contents);
+    visible_conversation_history_size =
+        active_chat_tab_helper->GetVisibleConversationHistory().size();
+  }
+  untrusted_source->AddBoolean("hasInitialHistory",
+                               visible_conversation_history_size != 0);
 
   untrusted_source->AddBoolean(
       "hasUserDismissedPremiumPrompt",
