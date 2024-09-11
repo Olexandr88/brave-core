@@ -694,7 +694,6 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
                             playlistItems.add(playlistItem);
                         }
                     }
-                    // if (playlistItems.size() > 0) {
                     mPlaylistService.addMediaFiles(
                             playlistItems.toArray(new PlaylistItem[0]),
                             ConstantUtils.DEFAULT_PLAYLIST,
@@ -704,9 +703,6 @@ public abstract class BraveToolbarLayoutImpl extends ToolbarLayout
                                     showAddedToPlaylistSnackBar();
                                 }
                             });
-                    // } else {
-                    //     showAlreadyAddedToPlaylistSnackBar();
-                    // }
                 });
     }
 
