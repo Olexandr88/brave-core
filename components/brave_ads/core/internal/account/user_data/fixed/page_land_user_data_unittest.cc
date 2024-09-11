@@ -19,7 +19,63 @@ namespace brave_ads {
 class BraveAdsPageLandUserDataTest : public test::TestBase {};
 
 TEST_F(BraveAdsPageLandUserDataTest,
-       BuildPageLandUserDataForHttpResponseStatusErrorPage) {
+       BuildPageLandUserDataForHttpInformationalResponseStatusCodeClass) {
+  // Act
+  const base::Value::Dict user_data = BuildPageLandUserData(
+      TabInfo{/*id=*/1,
+              /*is_visible=*/true,
+              /*redirect_chain=*/{GURL("https://brave.com")},
+              net::HTTP_SWITCHING_PROTOCOLS,
+              /*is_playing_media=*/false});
+
+  // Assert
+  EXPECT_EQ(base::test::ParseJsonDict(
+                R"(
+                    {
+                      "httpResponseStatus": "1xx"
+                    })"),
+            user_data);
+}
+
+TEST_F(BraveAdsPageLandUserDataTest,
+       BuildPageLandUserDataForHttpSuccessfulResponseStatusCodeClass) {
+  // Act
+  const base::Value::Dict user_data = BuildPageLandUserData(
+      TabInfo{/*id=*/1,
+              /*is_visible=*/true,
+              /*redirect_chain=*/{GURL("https://brave.com")}, net::HTTP_IM_USED,
+              /*is_playing_media=*/false});
+
+  // Assert
+  EXPECT_EQ(base::test::ParseJsonDict(
+                R"(
+                    {
+                      "httpResponseStatus": "2xx"
+                    })"),
+            user_data);
+}
+
+TEST_F(BraveAdsPageLandUserDataTest,
+       BuildPageLandUserDataForHttpRedirectionMessageStatusCodeClass) {
+  // Act
+  const base::Value::Dict user_data = BuildPageLandUserData(
+      TabInfo{/*id=*/1,
+              /*is_visible=*/true,
+              /*redirect_chain=*/{GURL("https://brave.com")},
+              net::HTTP_MOVED_PERMANENTLY,
+              /*is_playing_media=*/false});
+
+  // Assert
+  EXPECT_EQ(base::test::ParseJsonDict(
+                R"(
+                    {
+                      "httpResponseStatus": "3xx"
+                    })"),
+            user_data);
+}
+
+TEST_F(BraveAdsPageLandUserDataTest,
+       BuildPageLandUserDataForHttpClientErrorResponseStatusCode) {
   // Act
   const base::Value::Dict user_data = BuildPageLandUserData(TabInfo{
       /*id=*/1,
@@ -31,23 +87,67 @@ TEST_F(BraveAdsPageLandUserDataTest,
   EXPECT_EQ(base::test::ParseJsonDict(
                 R"(
                     {
-                      "httpResponseStatus": "errorPage"
+                      "httpResponseStatus": "404"
                     })"),
             user_data);
 }
 
 TEST_F(BraveAdsPageLandUserDataTest,
-       DoNotBuildPageLandUserDataForHttpResponseStatusNonErrorPage) {
+       BuildPageLandUserDataForHttpClientErrorResponseStatusCodeClass) {
   // Act
   const base::Value::Dict user_data = BuildPageLandUserData(
       TabInfo{/*id=*/1,
               /*is_visible=*/true,
-              /*redirect_chain=*/{GURL("https://brave.com")}, net::HTTP_OK,
-              /*is_playing_media=*/
-              false});
+              /*redirect_chain=*/{GURL("https://brave.com")},
+              net::HTTP_UPGRADE_REQUIRED,
+              /*is_playing_media=*/false});
 
   // Assert
-  EXPECT_THAT(user_data, ::testing::IsEmpty());
+  EXPECT_EQ(base::test::ParseJsonDict(
+                R"(
+                    {
+                      "httpResponseStatus": "4xx"
+                    })"),
+            user_data);
+}
+
+TEST_F(
+    BraveAdsPageLandUserDataTest,
+    BuildPageLandUserDataForPrivacyPreservingHttpServerErrorResponseStatusCode) {
+  // Act
+  const base::Value::Dict user_data = BuildPageLandUserData(
+      TabInfo{/*id=*/1,
+              /*is_visible=*/true,
+              /*redirect_chain=*/{GURL("https://brave.com")},
+              net::HTTP_INTERNAL_SERVER_ERROR,
+              /*is_playing_media=*/false});
+
+  // Assert
+  EXPECT_EQ(base::test::ParseJsonDict(
+                R"(
+                    {
+                      "httpResponseStatus": "500"
+                    })"),
+            user_data);
+}
+
+TEST_F(
+    BraveAdsPageLandUserDataTest,
+    BuildPageLandUserDataForPrivacyPreservingHttpServerErrorResponseStatusCodeClass) {
+  // Act
+  const base::Value::Dict user_data = BuildPageLandUserData(TabInfo{
+      /*id=*/1,
+      /*is_visible=*/true,
+      /*redirect_chain=*/{GURL("https://brave.com")}, net::HTTP_LOOP_DETECTED,
+      /*is_playing_media=*/false});
+
+  // Assert
+  EXPECT_EQ(base::test::ParseJsonDict(
+                R"(
+                    {
+                      "httpResponseStatus": "5xx"
+                    })"),
+            user_data);
 }
 
 TEST_F(
