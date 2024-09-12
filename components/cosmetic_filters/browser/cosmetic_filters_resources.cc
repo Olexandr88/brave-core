@@ -8,10 +8,12 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "brave/components/brave_shields/content/browser/ad_block_service.h"
+#include "brave/components/brave_shields/core/common/features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 
 namespace {
@@ -25,7 +27,7 @@ const char kProceduralActionsScript[] =
               stylesheet += filter.selector[0].arg + '{' + filter.action.arg + '}\n';
               return false;
             }
-            return true;
+            return %s;
           };
           CC.proceduralActionFilters = JSON.parse(String.raw`%s`).filter(f => takeStyleFilter(f));
           CC.hasProceduralActions = CC.proceduralActionFilters.length > 0;
@@ -94,6 +96,12 @@ void CosmeticFiltersResources::UrlCosmeticResources(
   auto resources =
       ad_block_service_->UrlCosmeticResources(url, aggressive_blocking);
 
+  const char* procedural_filtering_feature_enabled =
+      base::FeatureList::IsEnabled(
+          brave_shields::features::kBraveAdblockProceduralFiltering)
+          ? "true"
+          : "false";
+
   std::string procedural_actions_json;
   const auto* procedural_actions_list =
       resources.FindList("procedural_actions");
@@ -108,7 +116,8 @@ void CosmeticFiltersResources::UrlCosmeticResources(
     // Close the list by replacing the trailing comma.
     procedural_actions_json[procedural_actions_json.length() - 1] = ']';
     std::string procedural_actions_script = base::StringPrintf(
-        kProceduralActionsScript, procedural_actions_json.c_str());
+        kProceduralActionsScript, procedural_filtering_feature_enabled,
+        procedural_actions_json.c_str());
     resources.Set("procedural_actions_script", procedural_actions_script);
   }
   resources.Remove("procedural_actions");
