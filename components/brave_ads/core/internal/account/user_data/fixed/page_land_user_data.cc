@@ -7,7 +7,6 @@
 
 #include "brave/components/brave_ads/core/internal/common/net/http/http_status_code_util.h"
 #include "brave/components/brave_ads/core/internal/settings/settings.h"
-#include "brave/components/brave_ads/core/internal/tabs/tab_info.h"
 
 namespace brave_ads {
 
@@ -17,7 +16,7 @@ constexpr char kHttpResponseStatusKey[] = "httpResponseStatus";
 
 }  // namespace
 
-base::Value::Dict BuildPageLandUserData(const TabInfo& tab) {
+base::Value::Dict BuildPageLandUserData(const int http_status_code) {
   if (!UserHasJoinedBraveRewards()) {
     return {};
   }
@@ -25,7 +24,7 @@ base::Value::Dict BuildPageLandUserData(const TabInfo& tab) {
   base::Value::Dict user_data;
 
   user_data.Set(kHttpResponseStatusKey,
-                HttpStatusCodeToString(tab.http_status_code));
+                HttpStatusCodeToString(http_status_code));
 
   return user_data;
 }

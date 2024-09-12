@@ -102,6 +102,13 @@ void TabManager::NotifyTabDidChange(const TabInfo& tab) const {
   }
 }
 
+void TabManager::NotifyTabDidLoad(const int32_t tab_id,
+                                  const int http_status_code) const {
+  for (TabManagerObserver& observer : observers_) {
+    observer.OnTabDidLoad(tab_id, http_status_code);
+  }
+}
+
 void TabManager::NotifyDidOpenNewTab(const TabInfo& tab) const {
   for (TabManagerObserver& observer : observers_) {
     observer.OnDidOpenNewTab(tab);
@@ -206,7 +213,6 @@ void TabManager::OnNotifyTabDidChange(const int32_t tab_id,
                                       const std::vector<GURL>& redirect_chain,
                                       const bool is_new_navigation,
                                       const bool is_restoring,
-                                      const int http_status_code,
                                       const bool is_visible) {
   CHECK(!redirect_chain.empty());
 
@@ -224,7 +230,6 @@ void TabManager::OnNotifyTabDidChange(const int32_t tab_id,
   // Update the tab.
   tab.is_visible = is_visible;
   tab.redirect_chain = redirect_chain;
-  tab.http_status_code = http_status_code;
 
   if (is_visible) {
     // Update the visible tab id.
@@ -252,6 +257,11 @@ void TabManager::OnNotifyTabDidChange(const int32_t tab_id,
                       << (is_visible ? "focused" : "occluded"));
     NotifyTabDidChangeFocus(tab_id);
   }
+}
+
+void TabManager::OnNotifyTabDidLoad(const int32_t tab_id,
+                                    const int http_status_code) {
+  NotifyTabDidLoad(tab_id, http_status_code);
 }
 
 void TabManager::OnNotifyDidCloseTab(const int32_t tab_id) {

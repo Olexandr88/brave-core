@@ -244,7 +244,6 @@ public class BraveRewards: PreferencesObserver {
         redirectChain: tab.redirectChain,
         isNewNavigation: tab.rewardsReportingState.isNewNavigation,
         isRestoring: tab.rewardsReportingState.wasRestored,
-        httpStatusCode: tab.rewardsReportingState.httpStatusCode,
         isSelected: isSelected
       )
     }
@@ -264,6 +263,10 @@ public class BraveRewards: PreferencesObserver {
 
     tabRetrieved(tabId, url: url, html: htmlContent)
     if ads.isServiceRunning() {
+      ads.notifyTabDidLoad(
+        tabId,
+        httpStatusCode: tab.rewardsReportingState.httpStatusCode
+      )
       ads.notifyTabHtmlContentDidChange(
         tabId,
         redirectChain: redirectChain,

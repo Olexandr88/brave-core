@@ -5,6 +5,7 @@
 
 #include "brave/browser/brave_ads/tabs/ads_tab_helper.h"
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
@@ -20,6 +21,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "ui/base/page_transition_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -154,7 +156,7 @@ int AdsTabHelper::HttpStatusCode(content::NavigationHandle* navigation_handle) {
     return response_headers->response_code();
   }
 
-  return -1;
+  return net::HTTP_OK;
 }
 
 bool AdsTabHelper::IsErrorPage(const int http_status_code) const {
@@ -184,7 +186,7 @@ void AdsTabHelper::ResetNavigationState() {
   redirect_chain_.clear();
   redirect_chain_.shrink_to_fit();
 
-  http_status_code_ = -1;
+  http_status_code_.reset();
 
   media_players_.clear();
 }
@@ -241,15 +243,29 @@ void AdsTabHelper::MaybeNotifyTabDidChange() {
 
   ads_service_->NotifyTabDidChange(/*tab_id=*/session_id_.id(), redirect_chain_,
                                    is_new_navigation_, was_restored_,
-                                   http_status_code_, IsVisible());
+                                   IsVisible());
+}
+
+void AdsTabHelper::MaybeNotifyTabDidLoad() {
+  CHECK(http_status_code_);
+
+  if (!ads_service_) {
+    // No-op if the ads service is unavailable.
+    return;
+  }
+
+  ads_service_->NotifyTabDidLoad(/*tab_id=*/session_id_.id(),
+                                 *http_status_code_);
 }
 
 bool AdsTabHelper::ShouldNotifyTabContentDidChange() const {
+  CHECK(http_status_code_);
+
   // Don't notify about content changes if the ads service is not available, the
   // tab was restored, was a previously committed navigation, the web contents
   // are still loading, or an error page was displayed.
   return ads_service_ && !was_restored_ && is_new_navigation_ &&
-         !redirect_chain_.empty() && !IsErrorPage(http_status_code_);
+         !redirect_chain_.empty() && !IsErrorPage(*http_status_code_);
 }
 
 void AdsTabHelper::MaybeNotifyTabHtmlContentDidChange() {
@@ -361,7 +377,7 @@ void AdsTabHelper::DidFinishNavigation(
 
   MaybeNotifyUserGestureEventTriggered(navigation_handle);
 
-  MaybeNotifyTabDidChange();
+  MaybeNotifyTabDidLoad();
 
   // Process same document navigations only when a document load is completed.
   // For navigations that lead to a document change, `ProcessNavigation` is

@@ -53,8 +53,7 @@ TEST_F(BraveAdsSiteVisitTest, DoNotLandOnPageIfTheLastClickedAdIsInvalid) {
 
   NotifyTabDidChange(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
-      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
-      /*is_visible=*/true);
+      /*is_new_navigation=*/true, /*is_restoring=*/false, /*is_visible=*/true);
 
   // Act & Assert
   EXPECT_CALL(site_visit_observer_mock_, OnDidLandOnPage).Times(0);
@@ -71,8 +70,7 @@ TEST_F(BraveAdsSiteVisitTest,
   NotifyTabDidChange(
       /*tab_id=*/1,
       /*redirect_chain=*/{GURL("https://basicattentiontoken.org")},
-      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
-      /*is_visible=*/true);
+      /*is_new_navigation=*/true, /*is_restoring=*/false, /*is_visible=*/true);
 
   // Act & Assert
   EXPECT_CALL(site_visit_observer_mock_, OnDidLandOnPage).Times(0);
@@ -87,12 +85,12 @@ TEST_F(BraveAdsSiteVisitTest, DoNotLandOnPageIfTheSameTabIsAlreadyLanding) {
 
   EXPECT_CALL(site_visit_observer_mock_,
               OnMaybeLandOnPage(ad, /*after=*/kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
 
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com/about")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -126,7 +124,7 @@ TEST_F(
 
   EXPECT_CALL(site_visit_observer_mock_,
               OnMaybeLandOnPage(ad_1, /*after=*/kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -144,7 +142,7 @@ TEST_F(
                   /*is_playing_media=*/
                   false},
           /*remaining_time=*/base::Seconds(3)));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/false);
@@ -158,7 +156,7 @@ TEST_F(
 
   EXPECT_CALL(site_visit_observer_mock_,
               OnMaybeLandOnPage(ad_2, /*after=*/kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/2, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -176,7 +174,7 @@ TEST_F(
                   /*is_playing_media=*/
                   false},
           /*remaining_time=*/base::Seconds(7)));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/2, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/false);
@@ -192,7 +190,7 @@ TEST_F(
                   /*is_playing_media=*/
                   false},
           /*remaining_time=*/base::Seconds(3)));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -219,7 +217,7 @@ TEST_F(
                   /*is_playing_media=*/
                   false},
           /*remaining_time=*/base::Seconds(7)));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/2, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -249,7 +247,7 @@ TEST_F(
 
   EXPECT_CALL(site_visit_observer_mock_,
               OnMaybeLandOnPage(ad, /*after=*/kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -309,7 +307,7 @@ TEST_F(
 
   EXPECT_CALL(site_visit_observer_mock_,
               OnMaybeLandOnPage(ad, /*after=*/kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -372,7 +370,7 @@ TEST_F(BraveAdsSiteVisitTest, DoNotSuspendOrResumePageLand) {
 
   EXPECT_CALL(site_visit_observer_mock_,
               OnMaybeLandOnPage(ad, /*after=*/kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -420,8 +418,7 @@ TEST_F(
   EXPECT_CALL(site_visit_observer_mock_, OnMaybeLandOnPage).Times(0);
   NotifyTabDidChange(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
-      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
-      /*is_visible=*/true);
+      /*is_new_navigation=*/true, /*is_restoring=*/false, /*is_visible=*/true);
   EXPECT_EQ(0U, GetPendingTaskCount());
 }
 
@@ -434,7 +431,7 @@ TEST_F(BraveAdsSiteVisitTest,
 
   EXPECT_CALL(site_visit_observer_mock_,
               OnMaybeLandOnPage(ad_1, /*after=*/kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -450,7 +447,7 @@ TEST_F(BraveAdsSiteVisitTest,
                   /*is_playing_media=*/
                   false},
           kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/false);
@@ -463,7 +460,7 @@ TEST_F(BraveAdsSiteVisitTest,
 
   EXPECT_CALL(site_visit_observer_mock_,
               OnMaybeLandOnPage(ad_2, /*after=*/kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/2, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -479,7 +476,7 @@ TEST_F(BraveAdsSiteVisitTest,
                   /*is_playing_media=*/
                   false},
           kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/2, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/false);
@@ -495,7 +492,7 @@ TEST_F(BraveAdsSiteVisitTest,
                   /*is_playing_media=*/
                   false},
           kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -522,7 +519,7 @@ TEST_F(BraveAdsSiteVisitTest,
                   /*is_playing_media=*/
                   false},
           kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/2, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -552,7 +549,7 @@ TEST_F(BraveAdsSiteVisitTest,
 
   EXPECT_CALL(site_visit_observer_mock_,
               OnMaybeLandOnPage(ad, /*after=*/kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
       /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
@@ -581,21 +578,21 @@ TEST_F(
 
   EXPECT_CALL(site_visit_observer_mock_,
               OnMaybeLandOnPage(ad, /*after=*/kPageLandAfter.Get()));
-  NotifyTabDidChange(
+  NotifyTabDidLoad(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
-      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_NOT_FOUND,
+      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
       /*is_visible=*/true);
   ASSERT_EQ(1U, GetPendingTaskCount());
 
   // Act & Assert
   EXPECT_CALL(
       site_visit_observer_mock_,
-      OnDidLandOnPage(TabInfo{/*id=*/1,
-                              /*is_visible=*/true,
-                              /*redirect_chain=*/{GURL("https://brave.com")},
-                              net::HTTP_NOT_FOUND,
-                              /*is_playing_media=*/false},
-                      ad));
+      OnDidLandOnPage(
+          TabInfo{/*id=*/1,
+                  /*is_visible=*/true,
+                  /*redirect_chain=*/{GURL("https://brave.com")}, net::HTTP_OK,
+                  /*is_playing_media=*/false},
+          ad));
   FastForwardClockBy(kPageLandAfter.Get());
 }
 
@@ -607,13 +604,11 @@ TEST_F(BraveAdsSiteVisitTest, DoNotLandOnPageIfTheTabIsOccluded) {
 
   NotifyTabDidChange(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com/new_tab")},
-      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
-      /*is_visible=*/true);
+      /*is_new_navigation=*/true, /*is_restoring=*/false, /*is_visible=*/true);
 
   NotifyTabDidChange(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com/new_tab")},
-      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
-      /*is_visible=*/false);
+      /*is_new_navigation=*/true, /*is_restoring=*/false, /*is_visible=*/false);
 
   // Act & Assert
   EXPECT_CALL(site_visit_observer_mock_, OnDidLandOnPage).Times(0);
@@ -631,8 +626,7 @@ TEST_F(
   NotifyTabDidChange(
       /*tab_id=*/1,
       /*redirect_chain=*/{GURL("https://basicattentiontoken.org")},
-      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
-      /*is_visible=*/true);
+      /*is_new_navigation=*/true, /*is_restoring=*/false, /*is_visible=*/true);
 
   // Act & Assert
   EXPECT_CALL(site_visit_observer_mock_, OnDidLandOnPage).Times(0);
@@ -648,16 +642,14 @@ TEST_F(BraveAdsSiteVisitTest,
 
   NotifyTabDidChange(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
-      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
-      /*is_visible=*/true);
+      /*is_new_navigation=*/true, /*is_restoring=*/false, /*is_visible=*/true);
 
   // Act & Assert
   EXPECT_CALL(site_visit_observer_mock_, OnCanceledPageLand(/*tab_id=*/1, ad));
   NotifyTabDidChange(
       /*tab_id=*/1,
       /*redirect_chain=*/{GURL("https://basicattentiontoken.org")},
-      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
-      /*is_visible=*/true);
+      /*is_new_navigation=*/true, /*is_restoring=*/false, /*is_visible=*/true);
 }
 
 TEST_F(BraveAdsSiteVisitTest, CancelPageLandIfTheTabIsClosed) {
@@ -668,8 +660,7 @@ TEST_F(BraveAdsSiteVisitTest, CancelPageLandIfTheTabIsClosed) {
 
   NotifyTabDidChange(
       /*tab_id=*/1, /*redirect_chain=*/{GURL("https://brave.com")},
-      /*is_new_navigation=*/true, /*is_restoring=*/false, net::HTTP_OK,
-      /*is_visible=*/true);
+      /*is_new_navigation=*/true, /*is_restoring=*/false, /*is_visible=*/true);
 
   // Act & Assert
   EXPECT_CALL(site_visit_observer_mock_, OnCanceledPageLand(/*tab_id=*/1, ad));

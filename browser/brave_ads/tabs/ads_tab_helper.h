@@ -79,6 +79,7 @@ class AdsTabHelper : public content::WebContentsObserver,
       content::NavigationHandle* navigation_handle);
 
   void MaybeNotifyTabDidChange();
+  void MaybeNotifyTabDidLoad();
 
   bool ShouldNotifyTabContentDidChange() const;
   void MaybeNotifyTabHtmlContentDidChange();
@@ -126,7 +127,7 @@ class AdsTabHelper : public content::WebContentsObserver,
   bool was_restored_ = false;
   bool is_new_navigation_ = false;
   std::vector<GURL> redirect_chain_;
-  int http_status_code_ = -1;
+  std::optional<int> http_status_code_;
 
   std::set</*media_player_uuid*/ std::string> media_players_;
 

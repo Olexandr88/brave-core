@@ -1463,12 +1463,17 @@ void AdsServiceImpl::NotifyTabDidChange(const int32_t tab_id,
                                         const std::vector<GURL>& redirect_chain,
                                         const bool is_new_navigation,
                                         const bool is_restoring,
-                                        const int http_status_code,
                                         const bool is_visible) {
   if (bat_ads_client_notifier_remote_.is_bound()) {
     bat_ads_client_notifier_remote_->NotifyTabDidChange(
-        tab_id, redirect_chain, is_new_navigation, is_restoring,
-        http_status_code, is_visible);
+        tab_id, redirect_chain, is_new_navigation, is_restoring, is_visible);
+  }
+}
+
+void AdsServiceImpl::NotifyTabDidLoad(const int32_t tab_id,
+                                      const int http_status_code) {
+  if (bat_ads_client_notifier_remote_.is_bound()) {
+    bat_ads_client_notifier_remote_->NotifyTabDidLoad(tab_id, http_status_code);
   }
 }
 
