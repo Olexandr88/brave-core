@@ -158,6 +158,17 @@ function Main() {
     }
   }
 
+  const maybeShowSoftKeyboard = (querySubmitted: boolean) => {
+    if (context.isMobile && context.hasAcceptedAgreement &&
+      !context.hasInitialHistory && !querySubmitted) {
+        if (context.handleShowSoftKeyboard) {
+          context.handleShowSoftKeyboard()
+          return true
+        }
+    }
+    return false
+  }
+
   return (
     <main className={styles.main}>
       {context.showAgreementModal && <PrivacyMessage />}
@@ -273,6 +284,7 @@ function Main() {
           <InputBox
             context={context}
             onFocusInputMobile={handleOnFocusInputMobile}
+            maybeShowSoftKeyboard={maybeShowSoftKeyboard}
           />
         </ToolsButtonMenu>
       </div>
