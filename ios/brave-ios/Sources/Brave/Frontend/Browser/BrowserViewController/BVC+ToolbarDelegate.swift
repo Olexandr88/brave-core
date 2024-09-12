@@ -269,7 +269,7 @@ extension BrowserViewController: TopToolbarDelegate {
       if tab.translationState == .active {
         scriptHandler.revertTranslation()
       } else if tab.translationState != .active {
-        scriptHandler.startTranslation()
+        scriptHandler.startTranslation(canShowToast: true)
       }
     }
   }
