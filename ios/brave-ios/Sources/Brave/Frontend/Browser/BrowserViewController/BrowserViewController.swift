@@ -2661,8 +2661,12 @@ extension BrowserViewController: TabDelegate {
       ReaderModeScriptHandler(tab: tab),
       ErrorPageHelper(certStore: profile.certStore),
       SessionRestoreScriptHandler(tab: tab),
-      BlockedDomainScriptHandler(tab: tab),
-      HTTPBlockedScriptHandler(tab: tab, exceptionService: braveCore.httpsUpgradeExceptionsService),
+      BlockedDomainScriptHandler(tab: tab, tabManager: tabManager),
+      HTTPBlockedScriptHandler(
+        tab: tab,
+        tabManager: tabManager,
+        exceptionService: braveCore.httpsUpgradeExceptionsService
+      ),
       PrintScriptHandler(browserController: self, tab: tab),
       CustomSearchScriptHandler(tab: tab),
       DarkReaderScriptHandler(tab: tab),

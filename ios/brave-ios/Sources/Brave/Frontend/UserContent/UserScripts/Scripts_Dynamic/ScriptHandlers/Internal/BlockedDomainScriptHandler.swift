@@ -9,9 +9,11 @@ import WebKit
 
 class BlockedDomainScriptHandler: TabContentScript {
   private weak var tab: Tab?
+  private weak var tabManager: TabManager?
 
-  required init(tab: Tab) {
+  required init(tab: Tab, tabManager: TabManager?) {
     self.tab = tab
+    self.tabManager = tabManager
   }
 
   static let scriptName = "BlockedDomainScript"
@@ -20,7 +22,7 @@ class BlockedDomainScriptHandler: TabContentScript {
   static let scriptSandbox: WKContentWorld = .page
   static let userScript: WKUserScript? = nil
 
-  func userContentController(
+  @MainActor func userContentController(
     _ userContentController: WKUserContentController,
     didReceiveScriptMessage message: WKScriptMessage,
     replyHandler: (Any?, String?) -> Void
@@ -62,23 +64,14 @@ class BlockedDomainScriptHandler: TabContentScript {
     tab?.loadRequest(request)
   }
 
-  private func blockedDomainDidGoBack() {
-    guard let url = tab?.url?.strippedInternalURL else {
-      assertionFailure(
-        "There should be no way this method can be triggered if the tab is not on an internal url"
-      )
-      return
+  @MainActor private func blockedDomainDidGoBack() {
+    guard let tab else { return }
+    if tab.backList?.isEmpty == true {
+      // interstitial was opened in a new tab
+      tabManager?.addTabToRecentlyClosed(tab)
+      tabManager?.removeTab(tab)
+    } else {
+      tab.goBack()
     }
-
-    guard let listItem = tab?.backList?.reversed().first(where: { $0.url != url }) else {
-      // How is this even possible?
-      // All testing indicates no, so we will not handle.
-      // If we find it is, then we need to disable or hide the "Go Back" button in these cases.
-      // But this would require heavy changes or ugly mechanisms to InternalSchemeHandler.
-      tab?.goBack()
-      return
-    }
-
-    tab?.goToBackForwardListItem(listItem)
   }
 }
