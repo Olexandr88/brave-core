@@ -312,8 +312,8 @@ public abstract class BraveActivity extends ChromeActivity
     private BraveNewsController mBraveNewsController;
     private BraveNewsConnectionErrorHandler mBraveNewsConnectionErrorHandler;
     private MiscAndroidMetricsConnectionErrorHandler mMiscAndroidMetricsConnectionErrorHandler;
-
     private AppUpdateManager mAppUpdateManager;
+    private boolean mWalletBadgeVisible;
 
     /** Serves as a general exception for failed attempts to get BraveActivity. */
     public static class BraveActivityNotFoundException extends Exception {
@@ -510,11 +510,10 @@ public abstract class BraveActivity extends ChromeActivity
         });
     }
 
-    private void setWalletBadgeVisibility(boolean visibile) {
+    private void setWalletBadgeVisibility(boolean visible) {
+        mWalletBadgeVisible = visible;
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-        if (layout != null) {
-            layout.updateWalletBadgeVisibility(visibile);
-        }
+        layout.updateWalletBadgeVisibility(visible);
     }
 
     private void maybeShowPendingTransactions() {
