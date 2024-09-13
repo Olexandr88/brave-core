@@ -494,22 +494,6 @@ public abstract class BraveActivity extends ChromeActivity
         return mWalletModel;
     }
 
-    private void maybeHasPendingUnlockRequest() {
-        assert mKeyringService != null;
-        mKeyringService.hasPendingUnlockRequest(pending -> {
-            if (pending) {
-                BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-                if (layout != null) {
-                    layout.showWalletPanel();
-                }
-
-                return;
-            }
-            maybeShowPendingTransactions();
-            maybeShowSignTxRequestLayout();
-        });
-    }
-
     private void setWalletBadgeVisibility(boolean visible) {
         mWalletBadgeVisible = visible;
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
@@ -642,11 +626,13 @@ public abstract class BraveActivity extends ChromeActivity
         layout.dismissWalletPanelOrDialog();
     }
 
-    public void showWalletPanel(boolean ignoreWeb3NotificationPreference) {
-        BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-        if (layout != null) {
-            layout.showWalletIcon(true);
-        }
+    public void showWalletPanel(final boolean ignoreWeb3NotificationPreference) {
+        showWalletPanel(true, ignoreWeb3NotificationPreference);
+    }
+
+    public void showWalletPanel(final boolean showPendingTransactions, final boolean ignoreWeb3NotificationPreference) {
+        final BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
+        layout.showWalletIcon(true);
         if (!ignoreWeb3NotificationPreference
                 && !BraveWalletPreferences.getPrefWeb3NotificationsEnabled()) {
             return;
@@ -657,7 +643,17 @@ public abstract class BraveActivity extends ChromeActivity
                 layout.showWalletPanel();
                 return;
             }
-            maybeHasPendingUnlockRequest();
+            mKeyringService.hasPendingUnlockRequest(pending -> {
+                if (pending) {
+                    layout.showWalletPanel();
+                    return;
+                }
+                if (showPendingTransactions && mWalletBadgeVisible) {
+                    maybeShowPendingTransactions();
+                } else {
+                    maybeShowSignTxRequestLayout();
+                }
+            });
         });
     }
 
