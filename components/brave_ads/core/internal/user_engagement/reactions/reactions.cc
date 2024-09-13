@@ -159,6 +159,7 @@ void Reactions::ToggleSaveAd(mojom::ReactionInfoPtr mojom_reaction,
   const auto [iterator, inserted] =
       saved_ads_.insert(mojom_reaction->creative_instance_id);
   if (!inserted) {
+    // Already saved, so unsave it.
     saved_ads_.erase(iterator);
   }
   SetProfileListPref(prefs::kSaveAds, ReactionSetToList(saved_ads_));
@@ -186,6 +187,7 @@ void Reactions::ToggleMarkAdAsInappropriate(
   const auto [iterator, inserted] =
       marked_as_inappropriate_.insert(mojom_reaction->creative_set_id);
   if (!inserted) {
+    // Already marked as inappropriate, so unmark it.
     marked_as_inappropriate_.erase(iterator);
   }
   SetProfileListPref(prefs::kMarkedAsInappropriate,
