@@ -410,9 +410,7 @@ public abstract class BraveActivity extends ChromeActivity
             openPlaylist(true);
         } else if (id == R.id.add_to_playlist_id) {
             BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-            if (layout != null) {
-                layout.addMediaToPlaylist();
-            }
+            layout.addMediaToPlaylist();
         } else if (id == R.id.brave_news_id) {
             openBraveNewsSettings();
         } else if (id == R.id.request_brave_vpn_id || id == R.id.request_brave_vpn_check_id) {
@@ -556,7 +554,6 @@ public abstract class BraveActivity extends ChromeActivity
             if (errors != null && errors.length != 0) {
                 openBraveWalletDAppsActivity(
                         BraveWalletDAppsActivity.ActivityType.SIGN_MESSAGE_ERROR);
-                return;
             }
         });
         maybeShowSignMessageRequestLayout();
@@ -637,17 +634,13 @@ public abstract class BraveActivity extends ChromeActivity
                 return;
             }
             BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-            if (layout != null) {
-                layout.showWalletPanel();
-            }
+            layout.showWalletPanel();
         });
     }
 
     public void dismissWalletPanelOrDialog() {
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-        if (layout != null) {
-            layout.dismissWalletPanelOrDialog();
-        }
+        layout.dismissWalletPanelOrDialog();
     }
 
     public void showWalletPanel(boolean ignoreWeb3NotificationPreference) {
@@ -671,13 +664,11 @@ public abstract class BraveActivity extends ChromeActivity
 
     public void showWalletOnboarding() {
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-        if (layout != null) {
-            layout.showWalletIcon(true);
-            if (!BraveWalletPreferences.getPrefWeb3NotificationsEnabled()) {
-                return;
-            }
-            layout.showWalletPanel();
+        layout.showWalletIcon(true);
+        if (!BraveWalletPreferences.getPrefWeb3NotificationsEnabled()) {
+            return;
         }
+        layout.showWalletPanel();
     }
 
     public void walletInteractionDetected(WebContents webContents) {
@@ -688,10 +679,8 @@ public abstract class BraveActivity extends ChromeActivity
             return;
         }
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-        if (layout != null) {
-            layout.showWalletIcon(true);
-            updateWalletBadgeVisibility();
-        }
+        layout.showWalletIcon(true);
+        updateWalletBadgeVisibility();
     }
 
     public void showAccountCreation(@CoinType.EnumType int coinType) {
@@ -1580,7 +1569,7 @@ public abstract class BraveActivity extends ChromeActivity
         Utils.openAddress("/address/" + address, this, coinType, networkInfo);
     }
 
-    public void openBraveWalletDAppsActivity(BraveWalletDAppsActivity.ActivityType activityType) {
+    public void openBraveWalletDAppsActivity(@NonNull final BraveWalletDAppsActivity.ActivityType activityType) {
         Intent braveWalletIntent = new Intent(this, BraveWalletDAppsActivity.class);
         braveWalletIntent.putExtra("activityType", activityType.getValue());
         braveWalletIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -1701,9 +1690,7 @@ public abstract class BraveActivity extends ChromeActivity
 
     public void hideRewardsOnboardingIcon() {
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-        if (layout != null) {
-            layout.hideRewardsOnboardingIcon();
-        }
+        layout.hideRewardsOnboardingIcon();
     }
 
     private void createNotificationChannel() {
@@ -1734,30 +1721,22 @@ public abstract class BraveActivity extends ChromeActivity
 
     public void onRewardsPanelDismiss() {
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-        if (layout != null) {
-            layout.onRewardsPanelDismiss();
-        }
+        layout.onRewardsPanelDismiss();
     }
 
     public void dismissRewardsPanel() {
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-        if (layout != null) {
-            layout.dismissRewardsPanel();
-        }
+        layout.dismissRewardsPanel();
     }
 
     public void dismissShieldsTooltip() {
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-        if (layout != null) {
-            layout.dismissShieldsTooltip();
-        }
+        layout.dismissShieldsTooltip();
     }
 
     public void openRewardsPanel() {
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
-        if (layout != null) {
-            layout.openRewardsPanel();
-        }
+        layout.openRewardsPanel();
     }
 
     public Profile getCurrentProfile() {
@@ -1873,9 +1852,7 @@ public abstract class BraveActivity extends ChromeActivity
         Tab currentTab = getActivityTab();
         BraveToolbarLayoutImpl layout = getBraveToolbarLayout();
         if (currentTab != null) {
-            if (layout != null) {
-                layout.updateBraveShieldsButtonState(currentTab);
-            }
+            layout.updateBraveShieldsButtonState(currentTab);
             if (UrlUtilities.isNtpUrl(currentTab.getUrl().getSpec())) {
                 TabUtils.openNewTab();
             }
