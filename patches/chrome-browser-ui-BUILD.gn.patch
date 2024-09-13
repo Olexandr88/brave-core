@@ -1,16 +1,16 @@
 diff --git a/chrome/browser/ui/BUILD.gn b/chrome/browser/ui/BUILD.gn
-index 49a297bdf87b72302191168a215ef3e9f1e97570..bba83901a175cdeb150b77e7b9530164675bd885 100644
+index 63ceaa78276560269f66dd6afa651cd76f5c3fd6..e47b4cbc8e35817504d39f4ca0178fad9b360a14 100644
 --- a/chrome/browser/ui/BUILD.gn
 +++ b/chrome/browser/ui/BUILD.gn
-@@ -759,6 +759,7 @@ static_library("ui") {
-     "//chrome/browser/profiles:profile_attributes_impl",
+@@ -762,6 +762,7 @@ static_library("ui") {
      "//chrome/browser/profiles:profile_util_impl",
+     "//chrome/browser/signin:impl",
    ]
 +  public_deps += [ "//brave/browser/ui" ] allow_circular_includes_from += [ "//brave/browser/ui" ]
  
    if (enable_vr && is_win) {
      deps += [ "//chrome/browser/vr:vr_base" ]
-@@ -3822,7 +3823,10 @@ static_library("ui") {
+@@ -3830,7 +3831,10 @@ static_library("ui") {
        ]
        deps += [ "//chrome/updater/app/server/win:updater_legacy_idl" ]
      } else {
