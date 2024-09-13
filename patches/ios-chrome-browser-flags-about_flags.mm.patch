@@ -1,5 +1,5 @@
 diff --git a/ios/chrome/browser/flags/about_flags.mm b/ios/chrome/browser/flags/about_flags.mm
-index e578fe1f7656c345de8a28a2b34b1cf244ab5993..dc9297db0963cb8518a3602e40e4ab188dbb66eb 100644
+index da0e4bd5075f409959c2d30014823f5d6b014d98..c8694b430fc8ba9f441c9113b9e99afabe4d3b32 100644
 --- a/ios/chrome/browser/flags/about_flags.mm
 +++ b/ios/chrome/browser/flags/about_flags.mm
 @@ -1012,6 +1012,7 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =

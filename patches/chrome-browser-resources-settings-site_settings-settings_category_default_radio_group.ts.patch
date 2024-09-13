@@ -1,8 +1,8 @@
 diff --git a/chrome/browser/resources/settings/site_settings/settings_category_default_radio_group.ts b/chrome/browser/resources/settings/site_settings/settings_category_default_radio_group.ts
-index 814fb8f983f569354181322c6dc73a177b5f1f1d..e8f055fbfba2caf3f3f2539349742250e4d9ff96 100644
+index 33256e6ab30e8b49cfd6ed22e0ce17ac3eb518ae..9aae8c5ebf9914ca469b84e570f9836d08cabb36 100644
 --- a/chrome/browser/resources/settings/site_settings/settings_category_default_radio_group.ts
 +++ b/chrome/browser/resources/settings/site_settings/settings_category_default_radio_group.ts
-@@ -169,6 +169,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
+@@ -170,6 +170,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
        case ContentSettingsTypes.WEB_PRINTING:
          // "Ask" vs "Blocked".
          return ContentSetting.ASK;

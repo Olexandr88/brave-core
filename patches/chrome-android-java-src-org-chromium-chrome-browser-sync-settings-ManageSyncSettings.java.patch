@@ -1,5 +1,5 @@
 diff --git a/chrome/android/java/src/org/chromium/chrome/browser/sync/settings/ManageSyncSettings.java b/chrome/android/java/src/org/chromium/chrome/browser/sync/settings/ManageSyncSettings.java
-index 9e11fa988506b4792c153243ebfad738a1bdd6be..12b61ce2f552432da0504d0d27ae70fb7f52c7fe 100644
+index 0e09dbed0837ec74dd3fef73f3d92555faa7156c..e76992f5ae4e9d92cc94c32ac6fc3efc3f9646ea 100644
 --- a/chrome/android/java/src/org/chromium/chrome/browser/sync/settings/ManageSyncSettings.java
 +++ b/chrome/android/java/src/org/chromium/chrome/browser/sync/settings/ManageSyncSettings.java
 @@ -62,7 +62,7 @@ import org.chromium.chrome.browser.ui.signin.SigninUtils;
