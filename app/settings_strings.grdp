@@ -765,6 +765,21 @@
   <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER" desc="User annotation entries header on the autofill prediction improvements settings page." translateable="false">
     Saved information
   </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE" desc="The title of the delete user annotations entry confirmation dialog." translateable="false">
+    Delete annotation entry
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TEXT" desc="The body text of the delete user annotations entry confirmation dialog dscribing the entry." translateable="false">
+    The following entry will be deleted: <ph name="KEY">$1<ex>Date of birth</ex></ph> / <ph name="VALUE">$2<ex>15/02/1989</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_BUTTON_LABEL" desc="The label of the delete all user annotations entries button." translateable="false">
+    Delete all
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TITLE" desc="The title of the delete all user annotations entries confirmation dialog." translateable="false">
+    Delete all entries
+  </message>
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT" desc="The body text of the delete all user annotations entries confirmation dialog." translateable="false">
+    All the annotation entries will be deleted. This action cannot be undone
+  </message>
 
   <if expr="is_win or is_macosx">
     <message name="IDS_AUTOFILL_MANAGE_PASSKEYS_LABEL" desc="The label on a button that a user can click in order to see and delete passkeys saved on their computer. For consistency, the word 'passkey' is in the glossary with translations already suggested.">
@@ -812,18 +827,6 @@
   <message name="IDS_SETTINGS_PASSWORD_HIDE_PASSWORD_A11Y" desc="The ARIA (accessibility) message for the 'Hide Password' button, which sits in every row of the password list. For this row does not include a password, only information of the account. Hides password when clicked.">
     Hide password for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
   </message>
-
-  <if expr="is_macosx">
-  <message name="IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_MAC" desc="Label for a toggle that allows users to be authenticate using their TouchID or any other means of authentication when logging into webpages.">
-    Use your screen lock when filling passwords
-  </message>
-  </if>
-
-  <if expr="is_win">
-  <message name="IDS_SETTINGS_PASSWORDS_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_LABEL_WIN" desc="Label for a toggle that allows users to be authenticate using their Windows Hello when logging into webpages.">
-    Use Windows Hello when filling passwords
-  </message>
-  </if>
 
   <!-- Default Browser Page -->
   <if expr="not is_chromeos">
@@ -2937,6 +2940,21 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_BLOCKED" desc="Label for the disabled option of the hid devices site setting.">
     Don't allow sites to connect to HID devices
+  </message>
+  <message name="IDS_SITE_SETTINGS_SMART_CARD_READERS" desc="Main heading for the Smart Card Readers section in settings.">
+    Smart card readers
+  </message>
+  <message name="IDS_SITE_SETTINGS_SMART_CARD_READERS_DESCRIPTION" desc="Description of how Isolated Web Apps interact with smart card readers.">
+    Isolated Web Apps control smart card readers to gain access to smart cards that are inserted or presented to them. Smart cards usually contain identities that are used to authenticate or authorize operations, log into services, etc.
+  </message>
+  <message name="IDS_SITE_SETTINGS_SMART_CARDS_DEFAULT_DESCRIPTION" desc="Label indicating the default behavior for smart card access.">
+    Isolated Web Apps automatically follow this setting.
+  </message>
+  <message name="IDS_SITE_SETTINGS_SMART_CARDS_ALLOWED" desc="Option to allow Isolated Web Apps to control smart card readers.">
+    Isolated Web Apps can ask to control smart card readers. Apps will gain access to smart cards presented to readers under their control.
+  </message>
+  <message name="IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED" desc="Option to block Isolated Web Apps from controlling smart card readers.">
+    Isolated Web Apps cannot control smart card readers. Apps won't gain access to any smart card.
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_DESCRIPTION" desc="Description of the images content setting.">
     Sites usually show images to provide illustration, like photos for online stores or news articles

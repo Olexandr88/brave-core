@@ -658,6 +658,9 @@
     <message name="IDS_ENTERPRISE_OIDC_WELCOME_ERROR_SUBTITLE" desc="Subtitle of a section telling the user that there was an error while creating their work profile.">
       You can try again or contact your administrator for help
     </message>
+    <message name="IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE" desc="Subtitle the value proposition dialog for creating an enterprise profile.">
+      Sign in to securely separate your work and personal browsing. Increase your productivity while protecting sensitive company data.
+    </message>
 
     <!-- Supervised user profile signin IPH -->
     <!-- TODO(b/351333491): Mark them translateable once the strings are approved. -->
@@ -904,5 +907,23 @@
       Skip
     </message>
 
+    <!-- Batch Upload Desktop -->
+    <!-- TODO(b/365954368): All batch upload strings to be finalized and translated. -->
+    <message translateable="false" name="IDS_BATCH_UPLOAD_TITLE" desc="">
+      Save data to account
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SUBTITLE" desc="">
+      <!-- TODO(b/365954465): Incomplete string that might get more complex. -->
+      N items are saved only to this device. To use them on your other devices, save them in your Brave sync chain.
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS" desc="">
+      Passwords
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES" desc="">
+      Addresses
+    </message>
+    <message translateable="false" name="IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL" desc="">
+      Save in account
+    </message>
   </if>
 </grit-part>

@@ -76,12 +76,6 @@
     </if>
     </if>
 
-  <if expr="is_macosx">
-  </if>
-
-  <if expr="is_win">
-  </if>
-
   <if expr="not is_chromeos">
     </if>
 

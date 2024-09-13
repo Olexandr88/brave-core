@@ -110,6 +110,12 @@
    <message name="IDS_SELECT_PLUS_ADDRESS_TITLE_IOS" desc="The title shown in the sheet listing all plus addresses for selections" translateable="false">
         Select Plus Address
     </message>
+    <message name="IDS_SELECT_PLUS_ADDRESS_HEADER_TEXT_IOS" desc="The header text shown in the sheet listing all plus addresses for selection" translateable="false">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+    </message>
+    <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_SUGGESTION_SUBLABEL_PREFIX_TEXT_IOS" desc="The prefix of the sub label of the plus address manual fallback suggestion." translateable="false">
+	Plus address for <ph name="DOMAIN">$1<ex>foo.com</ex></ph>
+    </message>
 
     <!-- Desktop strings -->
     <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
@@ -170,6 +176,9 @@
     <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT" desc="The secondary text in the Autofill suggestion for create a new plus address." translateable="false">
       Lorem Ipsum
     </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT_WITH_FORWARDING_INFO" desc="The secondary text in the Autofill suggestion for creating a new plus address." translateable="false">
+      Lorem Ipsum <ph name="GAIA_EMAIL"><ex>foo@gmail.com</ex>$1</ph>
+    </message>
     <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME" desc="The accessible name on the button that allows refreshing plus addresses inside an Autofill popup suggestion." translateable="false">
       Refresh plus address
     </message>
@@ -183,7 +192,13 @@
       Lorem Ipsum dolor ...
     </message>
     <message name="IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT" desc="The error description shown inside the popup when an error occurs while attempting to reserve a plus address." translateable="false">
-      Something went wrong
+      Something went wrong. Try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_RESERVE_TIMEOUT_ERROR_TEXT" desc="The error description shown inside the popup when a timeout error occurs while attempting to reserve a plus address." translateable="false">
+      Something went wrong. Try again.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_RESERVE_QUOTA_ERROR_TEXT" desc="The error description shown inside the popup when an error occurs while attempting to reserve a plus address." translateable="false">
+      Can't create any more addresses.
     </message>
 
     <!-- Error modal for inline creation strings -->
@@ -201,6 +216,9 @@
     </message>
     <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
       Can't save plus address.
+    </message>
+    <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_TIMEOUT_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a timeout error is encountered during inline creation." translateable="false">
+      Make sure you're online and try again
     </message>
     <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_ACCEPT_BUTTON" desc="The button title of the accept button in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
       Try again

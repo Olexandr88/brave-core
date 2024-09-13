@@ -212,16 +212,8 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PREFS_SECTION_BASICS" desc="Title of &quot;Basics&quot; section of preferences. [CHAR_LIMIT=32]">
         Basics
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_SECTION_BROWSER_SETTINGS" translateable="false" desc="Title of &quot;Basics&quot; section of preferences. [CHAR_LIMIT=32]">
-        Browser settings
-      </message>
       <message name="IDS_PREFS_SECTION_ADVANCED" desc="Title of &quot;Advanced&quot; section of preferences. [CHAR_LIMIT=32]">
         Advanced
-      </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_SECTION_CHROME" translateable="false" desc="Title of &quot;Brave&quot; section of preferences. [CHAR_LIMIT=32]">
-        Brave
       </message>
 
       <!-- Notification channels -->
@@ -482,24 +474,18 @@ For more settings that use data to improve your Brave experience, go to <ph name
         You can choose your search engine
       </message>
 
-      <!-- Blocking choice dialog strings. TODO(b/355054464): replace with final versions -->
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_TITLE" desc="" translateable="false">
-        To continue, update your Android settings
+      <!-- Blocking choice dialog strings. -->
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_TITLE" desc="This string is the heading of a dialog that prompts the user to select the search engine and web browser that they want to use by default. (A search engine provides answers to search queries; this is different from a browser, which displays web pages. A search engine powers many experiences within a browser.) This dialog appears when the user opens Brave after they’ve ignored the Android notification to choose their default apps. This string is before the “Based on a law in your region, you need to choose your browser and search engine” string. We want users to read this dialog and understand that they can use the search engine and browser of their choice. The user can tap “Next” to start the selection flow.">
+        Choose your default apps
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_MESSAGE" desc="" translateable="false">
-        Based on a law in your region, your need to finish selecting your device\u2019s default apps
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_MESSAGE" desc="This is the body text of a dialog that explains why users are being prompted to choose a search engine and browser. This dialog appears when the user opens Brave after they’ve ignored the Android notification to choose their default apps. The headline for this dialog is “Choose your default apps”. We want users to read this dialog and understand that they can use the search engine and browser of their choice. The user can tap “Next” to start the selection flow.">
+        Based on a law in your region, you need to choose your browser and search engine
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_FIRST_BUTTON" desc="" translateable="false">
-        Next
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_TITLE" desc="This string is the heading of a dialog that confirms to the user that Android has saved their choices for the search engine and web browser that they want to use by default. This dialog appears after the user finishes the flow to choose their default apps. This string is before the “The apps you chose will be used by default. If an app isn’t already on this device, it’ll be downloaded shortly.” string. The user can tap “Done” to close the dialog and continue to use Brave (regardless of whether it was chosen as the default browser).">
+        Choices saved
       </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_TITLE" desc="" translateable="false">
-        You're all set!
-      </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_MESSAGE" desc="" translateable="false">
-        If you have selected another browser it will be downloaded in the background
-      </message>
-      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_BUTTON" desc="" translateable="false">
-        Got it
+      <message name="IDS_BLOCKING_CHOICE_DIALOG_SECOND_MESSAGE" desc="This is the body text of a dialog that confirms to the user that Android has saved their choices for the search engine and web browser that they want to use by default. It’s possible that the user has chosen a default app that wasn’t previously on their device: if so, that app is now being downloaded in the background. This dialog appears after the user finishes the flow to choose their default apps; now, the user can continue to use Brave (regardless of whether it was chosen as the default browser). The headline for this dialog is “Choices saved”. The user can tap “Done” to close the dialog and continue to use Brave (regardless of whether it was chosen as the default browser).">
+        The apps you chose will be used by default. If an app isn’t already on this device, it’ll be downloaded shortly.
       </message>
 
       <!-- Autofill and Payments preferences -->
@@ -590,45 +576,33 @@ For more settings that use data to improve your Brave experience, go to <ph name
       <message name="IDS_AUTOFILL_CARD_EDITOR_VIRTUAL_CARD_TURN_OFF_BUTTON_LABEL" desc="Label shown on the button that the user clicks on to unenroll from virtual cards.">
         Turn off
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_SECTION_AUTOFILL" translateable="false" desc="Title for the Passwords and Autofill preferences. [CHAR_LIMIT=32]">
+
+      <message name="IDS_PREFS_SECTION_AUTOFILL" desc="Title for the Passwords and Autofill preferences. [CHAR_LIMIT=32]">
         Passwords and Autofill
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Brave." formatter_data="android_java">
-        Autofill Options
+      <message name="IDS_AUTOFILL_OPTIONS_TITLE" desc="Description below switch toggling the use of third-party autofill in Brave." formatter_data="android_java">
+        Autofill Services
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_CONFIRM_RESTART" desc="Description below switch toggling the use of third-party autofill in Brave." formatter_data="android_java">
-        Restart now
+      <message name="IDS_AUTOFILL_OPTIONS_CONFIRM_RESTART" desc="Description below switch toggling the use of third-party autofill in Brave." formatter_data="android_java">
+        Restart Brave
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TITLE" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
-        Relaunch Brave to apply the setting
+      <message name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TITLE" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
+        Restart Brave?
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TEXT" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
-        Your tabs will reopen after relaunching.
+      <message name="IDS_AUTOFILL_OPTIONS_RESTART_PROMPT_TEXT" desc="Title of the dialog prompting the user to restart to apply the new Autofill settings." formatter_data="android_java">
+        To finish setting up autofill, restart Brave now. Your tabs will automatically reopen.
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_UNDO_TOGGLE_CHANGE" desc="Description below switch toggling the use of third-party autofill in Brave." formatter_data="android_java">
-        Undo setting change
+      <message name="IDS_AUTOFILL_OPTIONS_UNDO_TOGGLE_CHANGE" desc="Description below switch toggling the use of third-party autofill in Brave." formatter_data="android_java">
+        Cancel
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_POLICY" desc="Explanation that a policy prevents toggling the use of third-party autofill in Brave." formatter_data="android_java">
-        Disabled by the administrator of this device
+      <message name="IDS_AUTOFILL_OPTIONS_HINT_POLICY" desc="Explanation that a policy prevents toggling the use of third-party autofill in Brave." formatter_data="android_java">
+        Your administrator manages this setting.
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_DISABLED" desc="Explanation that a 3P password manager must be selected to toggle the use of third-party autofill in Brave." formatter_data="android_java">
-        Disabled because a different autofill service must be set up in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph> to use this setting.
+      <message name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_DISABLED" desc="Explanation that a 3P password manager must be selected to toggle the use of third-party autofill in Brave." formatter_data="android_java">
+        To set your preferred service for autofill, first add the service in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph> .
       </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_READY" desc="Explanation that third-party autofill in Brave will defer to the 3P password manager as selected in Android settings." formatter_data="android_java">
-        Ready to use the autofill service that is configured in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android System Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_IN_INCOGNITO" desc="Explanation that a 3P password manager may prompt to save passwords in private." formatter_data="android_java">
-        Note: When using “other providers”, the browser informs the configured AutofillService about sites and fields visited in private.\nThe AutofillService uses this information to autofill your data and may store data in the process. Autofill data saved in private mode is stored even after private mode ends and available outside private mode.
+      <message name="IDS_AUTOFILL_OPTIONS_HINT_3P_SETTING_READY" desc="Explanation that third-party autofill in Brave will defer to the 3P password manager as selected in Android settings." formatter_data="android_java">
+        Autofill services are also managed in <ph name="BEGIN_LINK">&lt;link&gt;</ph>Android Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_AUTOFILL_DELETE_SAVED_CVCS_CONFIRMATION_DIALOG_TITLE" desc="Title for the dialog where the user confirms their intention to delete their saved CVCs.">
         Delete saved security codes?
@@ -1066,10 +1040,6 @@ For more settings that use data to improve your Brave experience, go to <ph name
       </message>
 
       <!-- Privacy and security preferences -->
-      <!-- TODO(crbug.com/40898980): Use finalized string.-->
-      <message name="IDS_PREFS_PRIVACY_SECURITY_SECTION" translateable="false" desc="Title for the Privacy and Security section. [CHAR_LIMIT=32]">
-        Privacy and security
-      </message>
       <message name="IDS_PREFS_PRIVACY_SECURITY" desc="Title for the Privacy and Security preferences. [CHAR_LIMIT=32]">
         Privacy and security
       </message>
@@ -2904,6 +2874,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Brave da
       <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB" desc="Content description for the tab title.">
         <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, tab
       </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_NOTIFICATION" desc="Content description for the tab title with a notification status.">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, new or updated tab
+      </message>
       <message name="IDS_ACCESSIBILITY_TABSTRIP_BTN_CLOSE_TAB" desc="Content description for the close tab button.">
         Close <ph name="TAB_TITLE">%1$s<ex>Brave</ex></ph> tab
       </message>
@@ -4554,7 +4527,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Brave da
         Bookmark saved
       </message>
       <message name="IDS_PRICE_INSIGHTS_CONTENT_PRICE_UNTRACKED_SUCCESS_MESSAGE" desc="Confirmation message when user untrack a product successfully.">
-        Alerts for this product have been turned off
+        Price tracking stopped
       </message>
       <message name="IDS_PRICE_INSIGHTS_TITLE" desc="The title for the price insights button.">
         Price insights
@@ -5297,6 +5270,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Brave da
       </message>
       <message name="IDS_USING_GOOGLE" desc="Text notifying users that the default search engine has been set to Brave.">
         Using Brave for search
+      </message>
+
+      <!-- AuthTab -->
+      <message name="IDS_AUTH_TAB_SECURED_BY_CHROME_TEMPLATE" desc="Message template that used to indicating that the Auth Tab is securely running on Brave. [CHAR_LIMIT=32]">
+        Secured by <ph name="APP_NAME">%1$s<ex>Brave</ex></ph>
       </message>
 
       <!-- WebAPK/TWA related strings -->

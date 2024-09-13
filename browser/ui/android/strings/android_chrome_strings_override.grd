@@ -126,9 +126,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_SETTINGS_INCOGNITO_TAB_LOCK_SUMMARY_ANDROID_SETTING_ON" desc="Summary for a toggle in Settings that allows users to lock their existing Private tabs with a device reauthentication mechanism. This summary is shown to the user when the screen lock setting is on in the device.">
         Use screen lock to see open Private tabs
       </message>
-      <message translateable="false" name="IDS_AUTOFILL_OPTIONS_HINT_3P_IN_INCOGNITO" desc="Explanation that a 3P password manager may prompt to save passwords in private." formatter_data="android_java">
-        Note: When using “other providers”, the browser informs the configured AutofillService about sites and fields visited in private.\nThe AutofillService uses this information to autofill your data and may store data in the process. Autofill data saved in private mode is stored even after private mode ends and available outside private mode.
-      </message>
       <message name="IDS_PRIVACY_GUIDE_COOKIES_BLOCK_INCOGNITO_TITLE" desc="Title for the radio button for blocking third-party cookies in private.">
         Block while using Private
       </message>
