@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/values.h"
 
 namespace content {
 class RenderFrame;
@@ -17,8 +18,16 @@ class RenderFrame;
 
 namespace ai_chat {
 
+bool LoadSiteScriptForHost(const std::string& host,
+                           std::string* script_content);
+
+void OnSiteScriptExecutionResult(
+    base::OnceCallback<void(const std::optional<std::string>&)>,
+    std::optional<base::Value> result);
+
 void DistillPageText(
     content::RenderFrame* render_frame,
+    int32_t global_world_id,
     int32_t isolated_world_id,
     base::OnceCallback<void(const std::optional<std::string>&)>);
 

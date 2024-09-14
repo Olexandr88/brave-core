@@ -4,6 +4,7 @@
 // You can obtain one at https://mozilla.org/MPL/2.0/.
 
 #include "brave/components/ai_chat/renderer/page_text_distilling.h"
+#include "brave/components/ai_chat/distiller_scripts/grit/ai_chat_site_distiller_generated.h"
 
 #include <iterator>
 #include <optional>
@@ -17,12 +18,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "brave/components/ai_chat/core/common/mojom/page_content_extractor.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ai_chat {
 
@@ -123,8 +126,44 @@ void AddTextNodesToVector(const ui::AXNode* node,
 
 void DistillPageText(
     content::RenderFrame* render_frame,
+    int32_t global_world_id,
     int32_t isolated_world_id,
     base::OnceCallback<void(const std::optional<std::string>&)> callback) {
+  blink::WebLocalFrame* main_frame = render_frame->GetWebFrame();
+  GURL origin =
+      url::Origin(((const blink::WebFrame*)main_frame)->GetSecurityOrigin())
+          .GetURL();
+
+  std::string host = origin.host();
+  std::string script_content;
+
+  if (LoadSiteScriptForHost(host, &script_content)) {
+    blink::WebScriptSource source =
+        blink::WebScriptSource(blink::WebString::FromUTF8(script_content));
+
+    auto on_script_executed =
+        [](base::OnceCallback<void(const std::optional<std::string>&)> callback,
+           std::optional<base::Value> value, base::TimeTicks start_time) {
+          if (value->is_string() && !value->GetString().empty()) {
+            std::move(callback).Run(value->GetString());
+            return;
+          }
+
+          std::move(callback).Run({});
+        };
+
+    main_frame->RequestExecuteScript(
+        global_world_id, base::make_span(&source, 1u),
+        blink::mojom::UserActivationOption::kDoNotActivate,
+        blink::mojom::EvaluationTiming::kAsynchronous,
+        blink::mojom::LoadEventBlockingOption::kDoNotBlock,
+        base::BindOnce(on_script_executed, std::move(callback)),
+        blink::BackForwardCacheAware::kAllow,
+        blink::mojom::WantResultOption::kWantResult,
+        blink::mojom::PromiseResultOption::kAwait);
+    return;
+  }
+
   auto snapshotter = render_frame->CreateAXTreeSnapshotter(
       ui::AXMode::kWebContents | ui::AXMode::kHTML | ui::AXMode::kScreenReader);
   ui::AXTreeUpdate snapshot;
@@ -186,6 +225,25 @@ void DistillPageText(
   }
 
   std::move(callback).Run(contents_text);
+}
+
+bool LoadSiteScriptForHost(const std::string& host,
+                           std::string* script_content) {
+  // Map of host names to resource IDs
+  static const std::map<std::string, int> kHostToScriptResource = {
+      {"x.com", IDR_AI_CHAT_SITE_DISTILLER_X_COM_BUNDLE_JS},
+      {"github.com", IDR_AI_CHAT_SITE_DISTILLER_GITHUB_COM_BUNDLE_JS},
+  };
+
+  auto it = kHostToScriptResource.find(host);
+
+  if (it != kHostToScriptResource.end()) {
+    auto& resource_bundle = ui::ResourceBundle::GetSharedInstance();
+    *script_content = resource_bundle.LoadDataResourceString(it->second);
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace ai_chat
